@@ -3,7 +3,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
 const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -20,8 +25,9 @@ const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
-camera.position.z = 5;
-camera.position.y = 1;
+camera.position.z = 140;
+camera.position.y = 140;
+camera.position.x = 1;
 
 renderer.setClearColor(0x000000);
 
@@ -33,7 +39,7 @@ loader.load("art_desk.glb", function (gltf) {
 
 loader.load("ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(100, 0, 0);
+  ikeaLamp.position.set(60, 0, -10);
   scene.add(ikeaLamp);
 });
 loader.load("apartment.glb", function (gltf) {
@@ -76,7 +82,6 @@ scene.traverse((child) => {
   }
 });
 
-
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
@@ -105,24 +110,60 @@ document.addEventListener("keyup", function (event) {
   keyboardState[event.code] = false;
 });
 
-const movementSpeed = 0.1;
+const movementSpeed = 2;
+var cameraRotationSpeed = 0.01; // Adjust as needed
+
+// Update camera rotation based on keyboard input
+function updateCameraRotation() {
+  if (keyboardState["ArrowLeft"]) {
+    camera.rotation.y += cameraRotationSpeed; // Rotate left
+  }
+  if (keyboardState["ArrowRight"]) {
+    camera.rotation.y -= cameraRotationSpeed; // Rotate right
+  }
+  // if (keyboardState["ArrowUp"]) {
+  //   camera.rotation.x -= cameraRotationSpeed; // Rotate up
+  // }
+  // if (keyboardState["ArrowDown"]) {
+  //   camera.rotation.x += cameraRotationSpeed; // Rotate down
+  // }
+}
 
 function animate() {
   requestAnimationFrame(animate);
 
   // Update camera position based on keyboard input
   if (keyboardState["KeyW"]) {
-    camera.position.add(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(movementSpeed));
+    camera.position.add(
+      camera
+        .getWorldDirection(new THREE.Vector3())
+        .multiplyScalar(movementSpeed)
+    );
   }
   if (keyboardState["KeyS"]) {
-    camera.position.sub(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(movementSpeed));
+    camera.position.sub(
+      camera
+        .getWorldDirection(new THREE.Vector3())
+        .multiplyScalar(movementSpeed)
+    );
   }
   if (keyboardState["KeyA"]) {
-    camera.position.sub(camera.getWorldDirection(new THREE.Vector3()).cross(camera.up).multiplyScalar(movementSpeed));
+    camera.position.sub(
+      camera
+        .getWorldDirection(new THREE.Vector3())
+        .cross(camera.up)
+        .multiplyScalar(movementSpeed)
+    );
   }
   if (keyboardState["KeyD"]) {
-    camera.position.add(camera.getWorldDirection(new THREE.Vector3()).cross(camera.up).multiplyScalar(movementSpeed));
+    camera.position.add(
+      camera
+        .getWorldDirection(new THREE.Vector3())
+        .cross(camera.up)
+        .multiplyScalar(movementSpeed)
+    );
   }
+  updateCameraRotation();
 
   renderer.render(scene, camera);
 }
