@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -8,10 +7,6 @@ const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
-// Initialize OrbitControls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Enable smooth camera movement
 
 const loader = new GLTFLoader();
 
@@ -42,6 +37,13 @@ loader.load("apartment.glb", function (gltf) {
   scene.add(apartment);
 });
 
+loader.load("fridge.glb", function (gltf) {
+  const fridge = gltf.scene;
+  fridge.position.set(0, 0, 0);
+  fridge.scale.set(100,100,100)
+  fridge.rotateY(10)
+  scene.add(fridge);
+});
 // Load the light bulb model
 loader.load("led_light_bulb.glb", function (gltf) {
   const lightBulb = gltf.scene;
@@ -90,9 +92,19 @@ directionalLight.shadow.mapSize.height = 1024;
 directionalLight.shadow.camera.near = 0.5;
 directionalLight.shadow.camera.far = 500;
 
-// const specularLight = new THREE.DirectionalLight(0xffffff, 0.5);
-// specularLight.position.set(1, 0, 0);
-// scene.add(specularLight);
+// Mouse state for looking around
+const mouseState = {
+  x: 0,
+  y: 0,
+};
+
+let centerX = window.innerWidth / 2;
+let centerY = window.innerHeight / 2;
+
+document.addEventListener("mousemove", function (event) {
+  mouseState.x = (event.clientX - centerX) / centerX * Math.PI / 2;
+  mouseState.y = (event.clientY - centerY) / centerY * Math.PI / 2;
+});
 
 // Keyboard state for movement
 const keyboardState = {};
@@ -112,19 +124,39 @@ function animate() {
 
   // Update camera position based on keyboard input
   if (keyboardState["KeyW"]) {
-    camera.position.add(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(movementSpeed));
+    const direction = camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
   if (keyboardState["KeyS"]) {
-    camera.position.sub(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(movementSpeed));
+    const direction = camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(-movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
   if (keyboardState["KeyA"]) {
-    camera.position.sub(camera.getWorldDirection(new THREE.Vector3()).cross(camera.up).multiplyScalar(movementSpeed));
+    const direction = camera.getWorldDirection(new THREE.Vector3()).cross(camera.up).multiplyScalar(-movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
   if (keyboardState["KeyD"]) {
-    camera.position.add(camera.getWorldDirection(new THREE.Vector3()).cross(camera.up).multiplyScalar(movementSpeed));
+    const direction = camera.getWorldDirection(new THREE.Vector3()).cross(camera.up).multiplyScalar(movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
+
+  // Look around based on mouse movement
+  camera.rotation.y += (mouseState.x - camera.rotation.y) * 0.1;
+  camera.rotation.x += (mouseState.y - camera.rotation.x) * 0.1;
+
+  // Clamp vertical rotation to a specific range
+  const maxVerticalRotation = Math.PI / 4; // 45 degrees
+  camera.rotation.x = Math.max(-maxVerticalRotation, Math.min(maxVerticalRotation, camera.rotation.x));
+
+  // Keep the overall y position fixed
+  camera.position.y = 100;
 
   renderer.render(scene, camera);
 }
+
 
 animate();
