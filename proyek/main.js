@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+// import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -14,10 +15,6 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Initialize OrbitControls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Enable smooth camera movement
-
 const loader = new GLTFLoader();
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -25,31 +22,45 @@ const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
-camera.position.z = 140;
-camera.position.y = 140;
-camera.position.x = 1;
+camera.position.z = 5;
+camera.position.y = 1;
 
 renderer.setClearColor(0x000000);
 
-loader.load("art_desk.glb", function (gltf) {
+let controls = new PointerLockControls(camera, document.body);
+
+document.addEventListener("mousemove", function (event) {
+  controls.lock();
+});
+
+scene.add(controls.getObject());
+
+loader.load("public/art_desk.glb", function (gltf) {
   let lampu = gltf.scene;
   lampu.position.set(0, -3, 1);
   scene.add(lampu);
 });
 
-loader.load("ikea_lamp.glb", function (gltf) {
+loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(60, 0, -10);
+  ikeaLamp.position.set(100, 0, 0);
   scene.add(ikeaLamp);
 });
-loader.load("apartment.glb", function (gltf) {
+loader.load("public/apartment.glb", function (gltf) {
   const apartment = gltf.scene;
   apartment.position.set(0, 0, 0);
   scene.add(apartment);
 });
 
+loader.load("public/fridge.glb", function (gltf) {
+  const fridge = gltf.scene;
+  fridge.position.set(0, 0, 0);
+  fridge.scale.set(100, 100, 100);
+  fridge.rotateY(10);
+  scene.add(fridge);
+});
 // Load the light bulb model
-loader.load("led_light_bulb.glb", function (gltf) {
+loader.load("public/led_light_bulb.glb", function (gltf) {
   const lightBulb = gltf.scene;
   lightBulb.position.set(200, 0, 0);
   scene.add(lightBulb);
@@ -95,9 +106,19 @@ directionalLight.shadow.mapSize.height = 1024;
 directionalLight.shadow.camera.near = 0.5;
 directionalLight.shadow.camera.far = 500;
 
-// const specularLight = new THREE.DirectionalLight(0xffffff, 0.5);
-// specularLight.position.set(1, 0, 0);
-// scene.add(specularLight);
+// // Mouse state for looking around
+// const mouseState = {
+//   x: 0,
+//   y: 0,
+// };
+
+// let centerX = window.innerWidth / 2;
+// let centerY = window.innerHeight / 2;
+
+// document.addEventListener("mousemove", function (event) {
+//   mouseState.x = (event.clientX - centerX) / centerX * Math.PI / 2;
+//   mouseState.y = (event.clientY - centerY) / centerY * Math.PI / 2;
+// });
 
 // Keyboard state for movement
 const keyboardState = {};
@@ -110,62 +131,59 @@ document.addEventListener("keyup", function (event) {
   keyboardState[event.code] = false;
 });
 
-const movementSpeed = 2;
-var cameraRotationSpeed = 0.01; // Adjust as needed
-
-// Update camera rotation based on keyboard input
-function updateCameraRotation() {
-  if (keyboardState["ArrowLeft"]) {
-    camera.rotation.y += cameraRotationSpeed; // Rotate left
-  }
-  if (keyboardState["ArrowRight"]) {
-    camera.rotation.y -= cameraRotationSpeed; // Rotate right
-  }
-  // if (keyboardState["ArrowUp"]) {
-  //   camera.rotation.x -= cameraRotationSpeed; // Rotate up
-  // }
-  // if (keyboardState["ArrowDown"]) {
-  //   camera.rotation.x += cameraRotationSpeed; // Rotate down
-  // }
-}
+const movementSpeed = 0.1;
 
 function animate() {
   requestAnimationFrame(animate);
 
   // Update camera position based on keyboard input
   if (keyboardState["KeyW"]) {
-    camera.position.add(
-      camera
-        .getWorldDirection(new THREE.Vector3())
-        .multiplyScalar(movementSpeed)
-    );
+    const direction = camera
+      .getWorldDirection(new THREE.Vector3())
+      .multiplyScalar(movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
   if (keyboardState["KeyS"]) {
-    camera.position.sub(
-      camera
-        .getWorldDirection(new THREE.Vector3())
-        .multiplyScalar(movementSpeed)
-    );
+    const direction = camera
+      .getWorldDirection(new THREE.Vector3())
+      .multiplyScalar(-movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
   if (keyboardState["KeyA"]) {
-    camera.position.sub(
-      camera
-        .getWorldDirection(new THREE.Vector3())
-        .cross(camera.up)
-        .multiplyScalar(movementSpeed)
-    );
+    const direction = camera
+      .getWorldDirection(new THREE.Vector3())
+      .cross(camera.up)
+      .multiplyScalar(-movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
   if (keyboardState["KeyD"]) {
-    camera.position.add(
-      camera
-        .getWorldDirection(new THREE.Vector3())
-        .cross(camera.up)
-        .multiplyScalar(movementSpeed)
-    );
+    const direction = camera
+      .getWorldDirection(new THREE.Vector3())
+      .cross(camera.up)
+      .multiplyScalar(movementSpeed);
+    direction.y = 0; // Ignore y-axis movement
+    camera.position.add(direction);
   }
-  updateCameraRotation();
+
+  // // Look around based on mouse movement
+  // camera.rotation.y += (mouseState.x - camera.rotation.y) * 0.1;
+  // camera.rotation.x += (mouseState.y - camera.rotation.x) * 0.1;
+
+  // // Clamp vertical rotation to a specific range
+  // const maxVerticalRotation = Math.PI / 4; // 45 degrees
+  // camera.rotation.x = Math.max(
+  //   -maxVerticalRotation,
+  //   Math.min(maxVerticalRotation, camera.rotation.x)
+  // );
+
+  // Keep the overall y position fixed
+  camera.position.y = 100;
 
   renderer.render(scene, camera);
 }
 
+// init();
 animate();
