@@ -42,6 +42,14 @@ loader.load("ikea_lamp.glb", function (gltf) {
   ikeaLamp.position.set(60, 0, -10);
   scene.add(ikeaLamp);
 });
+
+// loader.load("low_poly_gaming_desk.glb", function (gltf) {
+//   const gd = gltf.scene;
+//   gd.position.set(60, 0, -10);
+//   scene.add(gd);
+//   console.log("s");
+// });
+
 loader.load("apartment.glb", function (gltf) {
   const apartment = gltf.scene;
   apartment.position.set(0, 0, 0);
