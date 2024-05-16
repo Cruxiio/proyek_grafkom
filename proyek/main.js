@@ -43,7 +43,7 @@ loader.load("public/art_desk.glb", function (gltf) {
 
 loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(100, 0, 0);
+  ikeaLamp.position.set(100, z0, 0);
   scene.add(ikeaLamp);
 });
 loader.load("public/apartment.glb", function (gltf) {
@@ -51,23 +51,25 @@ loader.load("public/apartment.glb", function (gltf) {
   apartment.position.set(0, 0, 0);
   scene.add(apartment);
 });
-
+let degrees = 270;
+let radians = THREE.MathUtils.degToRad(degrees);
 loader.load("public/fridge.glb", function (gltf) {
   const fridge = gltf.scene;
-  fridge.position.set(0, 0, 0);
+  fridge.position.set(-375, 0, -150);
   fridge.scale.set(100, 100, 100);
-  fridge.rotateY(10);
+  fridge.rotateY(radians);
   scene.add(fridge);
 });
 // Load the light bulb model
+// Load the light bulb model
 loader.load("public/led_light_bulb.glb", function (gltf) {
   const lightBulb = gltf.scene;
-  lightBulb.position.set(200, 0, 0);
+  lightBulb.position.set(-200, 225, 0);
   scene.add(lightBulb);
 
   // Create a PointLight positioned at the location of the light bulb
-  const light = new THREE.DirectionalLight(0xffffff, 50); // Increased intensity
-  light.position.set(200, 0, 0);
+  const light = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity
+  light.position.set(-200, 225, 0);
   scene.add(light);
 
   // Enable shadows for the light
@@ -76,11 +78,19 @@ loader.load("public/led_light_bulb.glb", function (gltf) {
   // Configure material of objects to receive shadows
   lightBulb.traverse((child) => {
     if (child.isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
+      child.castShadow = false; // Disable shadow casting for light bulb
+      child.receiveShadow = true; // Enable shadow receiving
+    }
+  });
+
+  // Make every object except light bulb cast shadows
+  scene.traverse((child) => {
+    if (child !== lightBulb && child.isMesh) {
+      child.castShadow = true; // Enable shadow casting
     }
   });
 });
+
 
 // Configure renderer for shadows
 renderer.shadowMap.enabled = true;
@@ -131,7 +141,7 @@ document.addEventListener("keyup", function (event) {
   keyboardState[event.code] = false;
 });
 
-const movementSpeed = 0.1;
+const movementSpeed = 1.5;
 
 function animate() {
   requestAnimationFrame(animate);
