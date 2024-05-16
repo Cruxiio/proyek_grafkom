@@ -1,6 +1,32 @@
 import * as THREE from "three";
+<<<<<<< Updated upstream
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+=======
+// import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+import { Octree } from "three/addons/math/Octree.js";
+import { Capsule } from "three/addons/math/Capsule.js";
+>>>>>>> Stashed changes
 
+const worldOctree = new Octree();
+const boundingBox = [];
+const lineMaterial = new THREE.LineBasicMaterial({
+  color: 0xffff00,
+  transparent: true,
+  opacity: 0,
+});
+
+const playerCollider = new Capsule(
+  new THREE.Vector3(0, 0.35, 0),
+  new THREE.Vector3(0, 1, 0),
+  0.35
+);
+
+const playerVelocity = new THREE.Vector3();
+const playerDirection = new THREE.Vector3();
+
+// setup scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
@@ -20,7 +46,19 @@ camera.position.y = 1;
 
 renderer.setClearColor(0x000000);
 
+<<<<<<< Updated upstream
 loader.load("art_desk.glb", function (gltf) {
+=======
+let controls = new PointerLockControls(camera, document.body);
+
+document.addEventListener("click", function (event) {
+  controls.lock();
+});
+
+scene.add(controls.getObject());
+
+loader.load("public/art_desk.glb", function (gltf) {
+>>>>>>> Stashed changes
   let lampu = gltf.scene;
   lampu.position.set(0, -3, 1);
   scene.add(lampu);
@@ -28,16 +66,30 @@ loader.load("art_desk.glb", function (gltf) {
 
 loader.load("ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
+<<<<<<< Updated upstream
   ikeaLamp.position.set(100, 0, 0);
   scene.add(ikeaLamp);
 });
 loader.load("apartment.glb", function (gltf) {
+=======
+  ikeaLamp.position.set(20, 0, -50);
+  scene.add(ikeaLamp);
+});
+
+loader.load("public/apartment.glb", function (gltf) {
+>>>>>>> Stashed changes
   const apartment = gltf.scene;
   apartment.position.set(0, 0, 0);
   scene.add(apartment);
 });
 
+<<<<<<< Updated upstream
 loader.load("fridge.glb", function (gltf) {
+=======
+let degrees = 270;
+let radians = THREE.MathUtils.degToRad(degrees);
+loader.load("public/fridge.glb", function (gltf) {
+>>>>>>> Stashed changes
   const fridge = gltf.scene;
   fridge.position.set(0, 0, 0);
   fridge.scale.set(100,100,100)
@@ -92,6 +144,7 @@ directionalLight.shadow.mapSize.height = 1024;
 directionalLight.shadow.camera.near = 0.5;
 directionalLight.shadow.camera.far = 500;
 
+<<<<<<< Updated upstream
 // Mouse state for looking around
 const mouseState = {
   x: 0,
@@ -105,6 +158,49 @@ document.addEventListener("mousemove", function (event) {
   mouseState.x = (event.clientX - centerX) / centerX * Math.PI / 2;
   mouseState.y = (event.clientY - centerY) / centerY * Math.PI / 2;
 });
+=======
+// set bounding box
+function setPositionScaleRotation(object, position, scale, rotation) {
+  object.position.set(...position);
+  object.scale.set(...scale);
+  object.rotation.set(...rotation.map((deg) => (deg * Math.PI) / 180));
+}
+
+function createBoundingBox(
+  scene,
+  position,
+  scale,
+  rotation,
+  octree,
+  boundingBox,
+  interactibles
+) {
+  const cube = new THREE.Mesh(geometry, material);
+  setPositionScaleRotation(cube, position, scale, rotation);
+  octree.fromGraphNode(cube);
+  scene.add(cube);
+
+  const edges = new THREE.EdgesGeometry(cube.geometry);
+  const line = new THREE.LineSegments(edges, lineMaterial);
+  line.position.copy(cube.position);
+  line.scale.copy(cube.scale);
+  line.rotation.copy(cube.rotation);
+  scene.add(line);
+
+  boundingBox.push({
+    cube: cube,
+    line: line,
+  });
+
+  if (interactibles) {
+    console.log("yay");
+    interactibles.boundingBox = {
+      cube: cube,
+      line: line,
+    };
+  }
+}
+>>>>>>> Stashed changes
 
 // Keyboard state for movement
 const keyboardState = {};
@@ -144,6 +240,7 @@ function animate() {
     camera.position.add(direction);
   }
 
+<<<<<<< Updated upstream
   // Look around based on mouse movement
   camera.rotation.y += (mouseState.x - camera.rotation.y) * 0.1;
   camera.rotation.x += (mouseState.y - camera.rotation.x) * 0.1;
@@ -152,6 +249,8 @@ function animate() {
   const maxVerticalRotation = Math.PI / 4; // 45 degrees
   camera.rotation.x = Math.max(-maxVerticalRotation, Math.min(maxVerticalRotation, camera.rotation.x));
 
+=======
+>>>>>>> Stashed changes
   // Keep the overall y position fixed
   camera.position.y = 100;
 
