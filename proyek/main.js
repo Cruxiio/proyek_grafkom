@@ -22,6 +22,8 @@ const playerCollider = new Capsule(
 const playerVelocity = new THREE.Vector3();
 const playerDirection = new THREE.Vector3();
 
+const clock = new THREE.Clock();
+
 // setup scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -61,7 +63,7 @@ loader.load("public/art_desk.glb", function (gltf) {
   scene.add(lampu);
 });
 
-loader.load("ikea_lamp.glb", function (gltf) {
+loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
   ikeaLamp.position.set(20, 0, -50);
   scene.add(ikeaLamp);
@@ -72,25 +74,25 @@ loader.load("public/apartment.glb", function (gltf) {
   apartment.position.set(0, 0, 0);
   scene.add(apartment);
 });
-
 let degrees = 270;
 let radians = THREE.MathUtils.degToRad(degrees);
 loader.load("public/fridge.glb", function (gltf) {
   const fridge = gltf.scene;
-  fridge.position.set(0, 0, 0);
+  fridge.position.set(-375, 0, -150);
   fridge.scale.set(100, 100, 100);
-  fridge.rotateY(10);
+  fridge.rotateY(radians);
   scene.add(fridge);
 });
 // Load the light bulb model
-loader.load("led_light_bulb.glb", function (gltf) {
+// Load the light bulb model
+loader.load("public/led_light_bulb.glb", function (gltf) {
   const lightBulb = gltf.scene;
-  lightBulb.position.set(200, 0, 0);
+  lightBulb.position.set(-200, 225, 0);
   scene.add(lightBulb);
 
   // Create a PointLight positioned at the location of the light bulb
-  const light = new THREE.DirectionalLight(0xffffff, 50); // Increased intensity
-  light.position.set(200, 0, 0);
+  const light = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity
+  light.position.set(-200, 225, 0);
   scene.add(light);
 
   // Enable shadows for the light
@@ -99,8 +101,15 @@ loader.load("led_light_bulb.glb", function (gltf) {
   // Configure material of objects to receive shadows
   lightBulb.traverse((child) => {
     if (child.isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
+      child.castShadow = false; // Disable shadow casting for light bulb
+      child.receiveShadow = true; // Enable shadow receiving
+    }
+  });
+
+  // Make every object except light bulb cast shadows
+  scene.traverse((child) => {
+    if (child !== lightBulb && child.isMesh) {
+      child.castShadow = true; // Enable shadow casting
     }
   });
 });
@@ -182,42 +191,122 @@ document.addEventListener("keyup", function (event) {
   keyboardState[event.code] = false;
 });
 
-const movementSpeed = 0.1;
+// const movementSpeed = 1.5;
+
+function getForwardVector() {
+  camera.getWorldDirection(playerDirection);
+  playerDirection.y = 0;
+  playerDirection.normalize();
+
+  return playerDirection;
+}
+
+function getSideVector() {
+  camera.getWorldDirection(playerDirection);
+  playerDirection.y = 0;
+  playerDirection.normalize();
+  playerDirection.cross(camera.up);
+
+  return playerDirection;
+}
+
+function movement(deltaTime) {
+  // gives a bit of air control
+  // let playerOnFloor = true;
+  // const movementSpeed = deltaTime * (playerOnFloor ? 25 : 8);
+  const movementSpeed = 1.5;
+  let direction = null;
+
+  // let damping = Math.exp(-4 * deltaTime) - 1;
+
+  // Update camera position based on keyboard input
+  if (keyboardState["KeyW"]) {
+    direction = getForwardVector().multiplyScalar(movementSpeed);
+    // playerVelocity.add(getForwardVector().multiplyScalar(movementSpeed));
+
+    // const direction = camera
+    //   .getWorldDirection(new THREE.Vector3())
+    //   .multiplyScalar(movementSpeed);
+    // direction.y = 0; // Ignore y-axis movement
+  }
+  if (keyboardState["KeyS"]) {
+    direction = getForwardVector().multiplyScalar(-movementSpeed);
+    // playerVelocity.add(getForwardVector().multiplyScalar(-movementSpeed));
+
+    // const direction = camera
+    //   .getWorldDirection(new THREE.Vector3())
+    //   .multiplyScalar(-movementSpeed);
+    // direction.y = 0; // Ignore y-axis movement
+    // camera.position.add(direction);
+  }
+  if (keyboardState["KeyA"]) {
+    direction = getSideVector().multiplyScalar(-movementSpeed);
+    // playerVelocity.add(getSideVector().multiplyScalar(-movementSpeed));
+    // const direction = camera
+    //   .getWorldDirection(new THREE.Vector3())
+    //   .cross(camera.up)
+    //   .multiplyScalar(-movementSpeed);
+    // direction.y = 0; // Ignore y-axis movement
+    // camera.position.add(direction);
+  }
+  if (keyboardState["KeyD"]) {
+    direction = getSideVector().multiplyScalar(movementSpeed);
+    // playerVelocity.add(getSideVector().multiplyScalar(movementSpeed));
+    // const direction = camera
+    //   .getWorldDirection(new THREE.Vector3())
+    //   .cross(camera.up)
+    //   .multiplyScalar(movementSpeed);
+    // direction.y = 0; // Ignore y-axis movement
+    // camera.position.add(direction);
+  }
+
+  // playerVelocity.addScaledVector(playerVelocity, damping);
+
+  // const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
+  // playerCollider.translate(deltaPosition);
+
+  if (direction != null) {
+    camera.position.add(direction);
+  }
+}
 
 function animate() {
   requestAnimationFrame(animate);
 
-  // Update camera position based on keyboard input
-  if (keyboardState["KeyW"]) {
-    const direction = camera
-      .getWorldDirection(new THREE.Vector3())
-      .multiplyScalar(movementSpeed);
-    direction.y = 0; // Ignore y-axis movement
-    camera.position.add(direction);
-  }
-  if (keyboardState["KeyS"]) {
-    const direction = camera
-      .getWorldDirection(new THREE.Vector3())
-      .multiplyScalar(-movementSpeed);
-    direction.y = 0; // Ignore y-axis movement
-    camera.position.add(direction);
-  }
-  if (keyboardState["KeyA"]) {
-    const direction = camera
-      .getWorldDirection(new THREE.Vector3())
-      .cross(camera.up)
-      .multiplyScalar(-movementSpeed);
-    direction.y = 0; // Ignore y-axis movement
-    camera.position.add(direction);
-  }
-  if (keyboardState["KeyD"]) {
-    const direction = camera
-      .getWorldDirection(new THREE.Vector3())
-      .cross(camera.up)
-      .multiplyScalar(movementSpeed);
-    direction.y = 0; // Ignore y-axis movement
-    camera.position.add(direction);
-  }
+  const deltaTime = Math.min(0.05, clock.getDelta());
+  movement(deltaTime);
+
+  // // Update camera position based on keyboard input
+  // if (keyboardState["KeyW"]) {
+  //   const direction = camera
+  //     .getWorldDirection(new THREE.Vector3())
+  //     .multiplyScalar(movementSpeed);
+  //   direction.y = 0; // Ignore y-axis movement
+  //   camera.position.add(direction);
+  // }
+  // if (keyboardState["KeyS"]) {
+  //   const direction = camera
+  //     .getWorldDirection(new THREE.Vector3())
+  //     .multiplyScalar(-movementSpeed);
+  //   direction.y = 0; // Ignore y-axis movement
+  //   camera.position.add(direction);
+  // }
+  // if (keyboardState["KeyA"]) {
+  //   const direction = camera
+  //     .getWorldDirection(new THREE.Vector3())
+  //     .cross(camera.up)
+  //     .multiplyScalar(-movementSpeed);
+  //   direction.y = 0; // Ignore y-axis movement
+  //   camera.position.add(direction);
+  // }
+  // if (keyboardState["KeyD"]) {
+  //   const direction = camera
+  //     .getWorldDirection(new THREE.Vector3())
+  //     .cross(camera.up)
+  //     .multiplyScalar(movementSpeed);
+  //   direction.y = 0; // Ignore y-axis movement
+  //   camera.position.add(direction);
+  // }
 
   // Keep the overall y position fixed
   camera.position.y = 100;
