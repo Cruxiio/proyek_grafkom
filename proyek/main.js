@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import { Octree } from "three/addons/math/Octree.js";
 import { Capsule } from "three/addons/math/Capsule.js";
+import { OctreeHelper } from "three/addons/helpers/OctreeHelper.js";
 
 const worldOctree = new Octree();
 const boundingBox = [];
@@ -14,15 +15,18 @@ const lineMaterial = new THREE.LineBasicMaterial({
 });
 
 const playerCollider = new Capsule(
-  new THREE.Vector3(0, 0.35, 0),
-  new THREE.Vector3(0, 1, 0),
-  0.35
+  new THREE.Vector3(-100, 0.35, 0),
+  new THREE.Vector3(-100, 100, 0),
+  10
 );
 
 const playerVelocity = new THREE.Vector3();
 const playerDirection = new THREE.Vector3();
 
 const clock = new THREE.Clock();
+
+// state
+let lineHelper = false;
 
 // setup scene
 const scene = new THREE.Scene();
@@ -40,12 +44,17 @@ document.body.appendChild(renderer.domElement);
 const loader = new GLTFLoader();
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+const material = new THREE.MeshBasicMaterial({
+  color: 0x00ff00,
+  transparent: true,
+  opacity: 0,
+});
+// const cube = new THREE.Mesh(geometry, material);
+// scene.add(cube);
 
 camera.position.z = 5;
 camera.position.y = 1;
+// camera.position.x = 100;
 
 renderer.setClearColor(0x000000);
 
@@ -60,6 +69,7 @@ scene.add(controls.getObject());
 loader.load("public/art_desk.glb", function (gltf) {
   let lampu = gltf.scene;
   lampu.position.set(0, -3, 1);
+  worldOctree.fromGraphNode(lampu);
   scene.add(lampu);
 });
 
@@ -71,6 +81,7 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
 
 loader.load("public/apartment.glb", function (gltf) {
   const apartment = gltf.scene;
+  // worldOctree.fromGraphNode(gltf.scene);
   apartment.position.set(0, 0, 0);
   scene.add(apartment);
 });
@@ -81,6 +92,7 @@ loader.load("public/fridge.glb", function (gltf) {
   fridge.position.set(-375, 0, -150);
   fridge.scale.set(100, 100, 100);
   fridge.rotateY(radians);
+  worldOctree.fromGraphNode(fridge);
   scene.add(fridge);
 });
 // Load the light bulb model
@@ -180,6 +192,76 @@ function createBoundingBox(
   }
 }
 
+// buat bounding box untuk setiap object
+//tembok dpn
+createBoundingBox(
+  scene,
+  [-250, 0, -200],
+  [1000, 100, 10],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+//tmbk kanan
+createBoundingBox(
+  scene,
+  [90, 0, 0],
+  [10, 100, 380],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+// tmbk belakang kiri (besar)
+createBoundingBox(
+  scene,
+  [-145, 0, 169],
+  [470, 100, 10],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+// tmbk belakang kanan (kecil)
+createBoundingBox(
+  scene,
+  [-620, 0, 169],
+  [260, 100, 10],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+// tembok kiri 1
+createBoundingBox(
+  scene,
+  [-759, 0, 80],
+  [10, 100, 178],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+// tembok kiri 2
+createBoundingBox(
+  scene,
+  [-759, 0, -165],
+  [10, 100, 70],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+// //meja
+// createBoundingBox(
+//   scene,
+//   [0, 0, 0],
+//   [100, 100, 100],
+//   [0, 0, 0],
+//   worldOctree,
+//   boundingBox
+// );
+
 // Keyboard state for movement
 const keyboardState = {};
 
@@ -210,19 +292,61 @@ function getSideVector() {
   return playerDirection;
 }
 
+function playerCollisions() {
+  const result = worldOctree.capsuleIntersect(playerCollider);
+  // console.log(result);
+
+  let playerOnFloor = false;
+
+  if (result) {
+    playerOnFloor = result.normal.y > 0;
+
+    if (!playerOnFloor) {
+      playerVelocity.addScaledVector(
+        result.normal,
+        -result.normal.dot(playerVelocity)
+      );
+    }
+
+    playerCollider.translate(result.normal.multiplyScalar(result.depth));
+  }
+}
+
+function updatePlayer(deltaTime) {
+  let damping = Math.exp(-4 * deltaTime) - 1;
+
+  // if ( ! playerOnFloor ) {
+
+  //   playerVelocity.y -= GRAVITY * deltaTime;
+
+  //   // small air resistance
+  //   damping *= 0.1;
+
+  // }
+
+  playerVelocity.addScaledVector(playerVelocity, damping);
+
+  const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
+  playerCollider.translate(deltaPosition);
+
+  playerCollisions();
+
+  camera.position.copy(playerCollider.end);
+}
+
 function movement(deltaTime) {
   // gives a bit of air control
-  // let playerOnFloor = true;
-  // const movementSpeed = deltaTime * (playerOnFloor ? 25 : 8);
-  const movementSpeed = 1.5;
-  let direction = null;
+  let playerOnFloor = true;
+  const movementSpeed = deltaTime * (playerOnFloor ? 500 : 8);
+  // const movementSpeed = 1.5;
+  // let direction = null;
 
   // let damping = Math.exp(-4 * deltaTime) - 1;
 
   // Update camera position based on keyboard input
   if (keyboardState["KeyW"]) {
-    direction = getForwardVector().multiplyScalar(movementSpeed);
-    // playerVelocity.add(getForwardVector().multiplyScalar(movementSpeed));
+    // direction = getForwardVector().multiplyScalar(movementSpeed);
+    playerVelocity.add(getForwardVector().multiplyScalar(movementSpeed));
 
     // const direction = camera
     //   .getWorldDirection(new THREE.Vector3())
@@ -230,8 +354,8 @@ function movement(deltaTime) {
     // direction.y = 0; // Ignore y-axis movement
   }
   if (keyboardState["KeyS"]) {
-    direction = getForwardVector().multiplyScalar(-movementSpeed);
-    // playerVelocity.add(getForwardVector().multiplyScalar(-movementSpeed));
+    // direction = getForwardVector().multiplyScalar(-movementSpeed);
+    playerVelocity.add(getForwardVector().multiplyScalar(-movementSpeed));
 
     // const direction = camera
     //   .getWorldDirection(new THREE.Vector3())
@@ -240,8 +364,8 @@ function movement(deltaTime) {
     // camera.position.add(direction);
   }
   if (keyboardState["KeyA"]) {
-    direction = getSideVector().multiplyScalar(-movementSpeed);
-    // playerVelocity.add(getSideVector().multiplyScalar(-movementSpeed));
+    // direction = getSideVector().multiplyScalar(-movementSpeed);
+    playerVelocity.add(getSideVector().multiplyScalar(-movementSpeed));
     // const direction = camera
     //   .getWorldDirection(new THREE.Vector3())
     //   .cross(camera.up)
@@ -250,8 +374,8 @@ function movement(deltaTime) {
     // camera.position.add(direction);
   }
   if (keyboardState["KeyD"]) {
-    direction = getSideVector().multiplyScalar(movementSpeed);
-    // playerVelocity.add(getSideVector().multiplyScalar(movementSpeed));
+    // direction = getSideVector().multiplyScalar(movementSpeed);
+    playerVelocity.add(getSideVector().multiplyScalar(movementSpeed));
     // const direction = camera
     //   .getWorldDirection(new THREE.Vector3())
     //   .cross(camera.up)
@@ -260,21 +384,37 @@ function movement(deltaTime) {
     // camera.position.add(direction);
   }
 
+  if (keyboardState["KeyH"]) {
+    lineHelper = !lineHelper;
+    if (lineHelper) {
+      lineMaterial.opacity = 1;
+    } else {
+      lineMaterial.opacity = 0;
+    }
+  }
+
   // playerVelocity.addScaledVector(playerVelocity, damping);
 
   // const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
   // playerCollider.translate(deltaPosition);
 
-  if (direction != null) {
-    camera.position.add(direction);
-  }
+  // camera.position.copy(playerCollider.end);
+
+  // if (direction != null) {
+  //   camera.position.add(direction);
+  // }
 }
+
+// const helper = new OctreeHelper(worldOctree);
+// helper.visible = true;
+// scene.add(helper);
 
 function animate() {
   requestAnimationFrame(animate);
 
   const deltaTime = Math.min(0.05, clock.getDelta());
   movement(deltaTime);
+  updatePlayer(deltaTime);
 
   // // Update camera position based on keyboard input
   // if (keyboardState["KeyW"]) {
@@ -309,7 +449,7 @@ function animate() {
   // }
 
   // Keep the overall y position fixed
-  camera.position.y = 100;
+  // camera.position.y = 100;
 
   renderer.render(scene, camera);
 }
