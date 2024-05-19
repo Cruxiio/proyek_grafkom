@@ -1,5 +1,4 @@
 import * as THREE from "three";
-// import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import { Octree } from "three/addons/math/Octree.js";
@@ -38,12 +37,22 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 const renderer = new THREE.WebGLRenderer();
-
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.gammaFactor = 2.2;
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appearance
+// renderer.shadowMap.enabled = true;
+// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
+
+let degrees = 270;
+let radians = THREE.MathUtils.degToRad(degrees);
 
 const loader = new GLTFLoader();
 
+// Add a cube to the scene
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({
   color: 0x00ff00,
@@ -59,6 +68,7 @@ camera.position.y = 1;
 
 renderer.setClearColor(0x000000);
 
+// Set up Pointer Lock Controls
 let controls = new PointerLockControls(camera, document.body);
 
 document.addEventListener("click", function (event) {
@@ -67,90 +77,134 @@ document.addEventListener("click", function (event) {
 
 scene.add(controls.getObject());
 
+// Load and add the art desk model
 loader.load("public/art_desk.glb", function (gltf) {
-  let lampu = gltf.scene;
-  lampu.position.set(0, -3, 1);
-  worldOctree.fromGraphNode(lampu);
-  arrObj.push(lampu);
-  scene.add(lampu);
+  let art_desk = gltf.scene;
+  art_desk.position.set(0, 0, 1);
+  worldOctree.fromGraphNode(art_desk);
+  arrObj.push(art_desk);
+
+  art_desk.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Enable shadow casting
+      child.receiveShadow = true; // Enable shadow receiving
+    }
+  });
+
+  scene.add(art_desk);
 });
 
+// Load and add the IKEA lamp model
 loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(20, 0, -50);
+  ikeaLamp.position.set(-100, 0, 0);
   scene.add(ikeaLamp);
+
+  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light.position.set(-100, 125, 0); // Position the light at the same location as the light bulb
+  light.castShadow = true; // Enable shadows for the point light
+  light.shadow.mapSize.width = 4096;
+  light.shadow.mapSize.height = 4096;
+  // light.shadow.bias= 0.005
+  light.shadow.normalBias = 0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
+  scene.add(light);
 });
 
 loader.load("public/apartment.glb", function (gltf) {
   const apartment = gltf.scene;
   // worldOctree.fromGraphNode(gltf.scene);
   apartment.position.set(0, 0, 0);
+  apartment.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Allow the model to cast shadows
+      child.receiveShadow = true; // Allow the model to receive shadows
+    }
+  });
   scene.add(apartment);
 });
-let degrees = 270;
-let radians = THREE.MathUtils.degToRad(degrees);
+
+// Load and add the fridge model
+let fridgeDegrees = 270;
+let fridgeRadians = THREE.MathUtils.degToRad(fridgeDegrees);
 loader.load("public/fridge.glb", function (gltf) {
   const fridge = gltf.scene;
-  fridge.position.set(-375, 0, -150);
+  fridge.position.set(-200, 0, -150);
   fridge.scale.set(100, 100, 100);
-  fridge.rotateY(radians);
+  // fridge.rotateY(radians);
+  fridge.rotateY(fridgeRadians);
   worldOctree.fromGraphNode(fridge);
   scene.add(fridge);
+
+  fridge.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Allow the model to cast shadows
+      child.receiveShadow = true; // Allow the model to receive shadows
+    }
+  });
 });
-// Load the light bulb model
-// Load the light bulb model
+
+// Load and add the light bulb model
+degrees = 180;
+radians = THREE.MathUtils.degToRad(degrees);
+
+let lightBulb;
 loader.load("public/led_light_bulb.glb", function (gltf) {
-  const lightBulb = gltf.scene;
-  lightBulb.position.set(-200, 225, 0);
+  lightBulb = gltf.scene;
+  lightBulb.position.set(-200, 235, 0);
+  lightBulb.rotateX(radians);
   scene.add(lightBulb);
 
-  // Create a PointLight positioned at the location of the light bulb
-  const light = new THREE.DirectionalLight(0xffffff, 2); // Increased intensity
-  light.position.set(-200, 225, 0);
+  const light = new THREE.PointLight(0xffffff, 100000, 10000); // Increased intensity
+  light.position.set(-200, 230, 0);
+  light.castShadow = true;
+  light.shadow.mapSize.width = 4096;
+  light.shadow.mapSize.height = 4096;
+  light.shadow.bias = -0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
   scene.add(light);
 
-  // Enable shadows for the light
-  light.castShadow = true;
-
-  // Configure material of objects to receive shadows
   lightBulb.traverse((child) => {
     if (child.isMesh) {
-      child.castShadow = false; // Disable shadow casting for light bulb
-      child.receiveShadow = true; // Enable shadow receiving
+      child.castShadow = false; // Light bulb should not cast shadows
+      child.receiveShadow = true; // Light bulb should receive shadows
     }
   });
 
-  // Make every object except light bulb cast shadows
   scene.traverse((child) => {
     if (child !== lightBulb && child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
+      child.castShadow = true;
+      child.receiveShadow = true;
     }
   });
 });
 
 // Configure renderer for shadows
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows for smoother appearance
+renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appearance
 
 // Configure materials to receive shadows
-scene.traverse((child) => {
-  if (child.isMesh) {
-    child.receiveShadow = true;
-  }
-});
+// scene.traverse((child) => {
+//   if (child.isMesh) {
+//     child.receiveShadow = true;
+//   }
+// });
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(0, 1, 0);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+// directionalLight.position.set(0, 1, 0);
+// directionalLight.castShadow = true;
+// scene.add(directionalLight);
 
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
-directionalLight.shadow.camera.near = 0.5;
-directionalLight.shadow.camera.far = 500;
+// directionalLight.shadow.mapSize.width = 1024;
+// directionalLight.shadow.mapSize.height = 1024;
+// directionalLight.shadow.camera.near = 0.5;
+// directionalLight.shadow.camera.far = 500;
 
 // set bounding box
 function setPositionScaleRotation(object, position, scale, rotation) {
@@ -186,7 +240,7 @@ function createBoundingBox(
   });
 
   if (interactibles) {
-    console.log("yay");
+    // console.log("yay");
     interactibles.boundingBox = {
       cube: cube,
       line: line,
@@ -426,6 +480,7 @@ function movement(deltaTime) {
 // helper.visible = true;
 // scene.add(helper);
 
+// Animation loop
 function animate() {
   requestAnimationFrame(animate);
 
