@@ -27,6 +27,7 @@ const clock = new THREE.Clock();
 
 // state
 let lineHelper = false;
+let arrObj = [];
 
 // setup scene
 const scene = new THREE.Scene();
@@ -70,6 +71,7 @@ loader.load("public/art_desk.glb", function (gltf) {
   let lampu = gltf.scene;
   lampu.position.set(0, -3, 1);
   worldOctree.fromGraphNode(lampu);
+  arrObj.push(lampu);
   scene.add(lampu);
 });
 
@@ -390,6 +392,21 @@ function movement(deltaTime) {
       lineMaterial.opacity = 1;
     } else {
       lineMaterial.opacity = 0;
+    }
+  }
+
+  if (keyboardState["KeyE"]) {
+    let camPos = camera.position;
+    let objPos = arrObj[0].position;
+    console.log(camPos, objPos);
+
+    let dist = camPos.distanceTo(objPos);
+    console.log(camPos, objPos, dist);
+
+    if (dist <= 120) {
+      console.log("interact");
+    } else {
+      console.log("sek lama");
     }
   }
 
