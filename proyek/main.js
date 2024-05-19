@@ -103,8 +103,8 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
   const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
   light.position.set(-100, 125, 0); // Position the light at the same location as the light bulb
   light.castShadow = true; // Enable shadows for the point light
-  light.shadow.mapSize.width = 4096;
-  light.shadow.mapSize.height = 4096;
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
   // light.shadow.bias= 0.005
   light.shadow.normalBias = 0.05;
   light.shadow.camera.near = 0.5;
@@ -160,8 +160,8 @@ loader.load("public/led_light_bulb.glb", function (gltf) {
   const light = new THREE.PointLight(0xffffff, 100000, 10000); // Increased intensity
   light.position.set(-200, 230, 0);
   light.castShadow = true;
-  light.shadow.mapSize.width = 4096;
-  light.shadow.mapSize.height = 4096;
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
   light.shadow.bias = -0.05;
   light.shadow.camera.near = 0.5;
   light.shadow.camera.near = 0.5;
