@@ -103,19 +103,20 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
   const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
   light.position.set(-100, 125, 0); // Position the light at the same location as the light bulb
   light.castShadow = true; // Enable shadows for the point light
-  light.shadow.mapSize.width = 4096;
-  light.shadow.mapSize.height = 4096;
-  // light.shadow.bias= 0.005
+  light.shadow.mapSize.width = 2048;
+  light.shadow.mapSize.height = 2048;
+  // light.shadow.bias= -0.005
   light.shadow.normalBias = 0.05;
   light.shadow.camera.near = 0.5;
   light.shadow.camera.far = 50;
   scene.add(light);
 });
 
-loader.load("public/apartment.glb", function (gltf) {
+loader.load("public/house.glb", function (gltf) {
   const apartment = gltf.scene;
+  apartment.scale.set(3, 3, 3); 
   // worldOctree.fromGraphNode(gltf.scene);
-  apartment.position.set(0, 0, 0);
+  apartment.position.set(-500, 0, 0);
   apartment.traverse((child) => {
     if (child.isMesh) {
       child.castShadow = true; // Allow the model to cast shadows
@@ -159,9 +160,10 @@ loader.load("public/led_light_bulb.glb", function (gltf) {
   const light = new THREE.PointLight(0xffffff, 100000, 10000); // Increased intensity
   light.position.set(-200, 230, 0);
   light.castShadow = true;
-  light.shadow.mapSize.width = 4096;
-  light.shadow.mapSize.height = 4096;
-  light.shadow.bias = -0.05;
+  light.shadow.mapSize.width = 2048;
+  light.shadow.mapSize.height = 2048;
+  // light.shadow.bias = -0.05;
+  light.shadow.normalBias =0.05
   light.shadow.camera.near = 0.5;
   light.shadow.camera.near = 0.5;
   light.shadow.camera.far = 50;
@@ -193,8 +195,8 @@ renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appea
 //   }
 // });
 
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-// scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
 // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 // directionalLight.position.set(0, 1, 0);
@@ -249,64 +251,102 @@ function createBoundingBox(
 }
 
 // buat bounding box untuk setiap object
-//tembok dpn
+//tembok kanan
 createBoundingBox(
   scene,
-  [-250, 0, -200],
-  [1000, 100, 10],
+  [-250, 0, -620],
+  [2000, 100, 10],
   [0, 0, 0],
   worldOctree,
   boundingBox
 );
-//tmbk kanan
+//tmbk Belakang
 createBoundingBox(
   scene,
-  [90, 0, 0],
-  [10, 100, 380],
+  [30, 0, 0],
+  [10, 100, 1200],
   [0, 0, 0],
   worldOctree,
   boundingBox
 );
 
-// tmbk belakang kiri (besar)
+// tmbk kiri (besar)
 createBoundingBox(
   scene,
   [-145, 0, 169],
-  [470, 100, 10],
+  [820, 100, 10],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+//tengah kiri
+createBoundingBox(
+  scene,
+  [-550, 0, 340],
+  [10, 100, 500],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+//tengah kanan
+createBoundingBox(
+  scene,
+  [-550, 0, -350],
+  [10, 100, 550],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+
+//tmbk Depan
+createBoundingBox(
+  scene,
+  [-1250, 0, 0],
+  [10, 100, 1200],
+  [0, 0, 0],
+  worldOctree,
+  boundingBox
+);
+// tembok kiri depan
+createBoundingBox(
+  scene,
+  [-830, 0, 580],
+  [820, 100, 10],
   [0, 0, 0],
   worldOctree,
   boundingBox
 );
 
 // tmbk belakang kanan (kecil)
-createBoundingBox(
-  scene,
-  [-620, 0, 169],
-  [260, 100, 10],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
+// createBoundingBox(
+//   scene,
+//   [-620, 0, 169],
+//   [260, 100, 10],
+//   [0, 0, 0],
+//   worldOctree,
+//   boundingBox
+// );
 
 // tembok kiri 1
-createBoundingBox(
-  scene,
-  [-759, 0, 80],
-  [10, 100, 178],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
+// createBoundingBox(
+//   scene,
+//   [-759, 0, 80],
+//   [10, 100, 178],
+//   [0, 0, 0],
+//   worldOctree,
+//   boundingBox
+// );
 
 // tembok kiri 2
-createBoundingBox(
-  scene,
-  [-759, 0, -165],
-  [10, 100, 70],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
+// createBoundingBox(
+//   scene,
+//   [-759, 0, -165],
+//   [10, 100, 70],
+//   [0, 0, 0],
+//   worldOctree,
+//   boundingBox
+// );
 
 // //meja
 // createBoundingBox(
