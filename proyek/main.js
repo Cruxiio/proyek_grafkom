@@ -4,11 +4,20 @@ import { PointerLockControls } from "three/addons/controls/PointerLockControls.j
 import { Octree } from "three/addons/math/Octree.js";
 import { Capsule } from "three/addons/math/Capsule.js";
 import { OctreeHelper } from "three/addons/helpers/OctreeHelper.js";
+import { colision } from "./colision.js";
+import { loadModels } from "./loadModel.js";
 
 const worldOctree = new Octree();
 const boundingBox = [];
 const lineMaterial = new THREE.LineBasicMaterial({
   color: 0xffff00,
+  transparent: true,
+  opacity: 0,
+});
+// Add a cube to the scene
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial({
+  color: 0x00ff00,
   transparent: true,
   opacity: 0,
 });
@@ -52,16 +61,6 @@ let radians = THREE.MathUtils.degToRad(degrees);
 
 const loader = new GLTFLoader();
 
-// Add a cube to the scene
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({
-  color: 0x00ff00,
-  transparent: true,
-  opacity: 0,
-});
-// const cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
-
 camera.position.z = 5;
 camera.position.y = 1;
 // camera.position.x = 100;
@@ -77,142 +76,8 @@ document.addEventListener("click", function (event) {
 
 scene.add(controls.getObject());
 
-// Load and add the art desk model
-loader.load("public/art_desk.glb", function (gltf) {
-  let art_desk = gltf.scene;
-  art_desk.position.set(-150, 0, 1);
-  worldOctree.fromGraphNode(art_desk);
-  arrObj.push(art_desk);
+loadModels(scene, loader, worldOctree, arrObj);
 
-  art_desk.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-
-  scene.add(art_desk);
-});
-
-loader.load("public/kitchen_sink.glb", function (gltf) {
-  let kitchen_sink = gltf.scene;
-  kitchen_sink.position.set(-400, 0, 1);
-  kitchen_sink.scale.set(100, 100, 100);
-  worldOctree.fromGraphNode(kitchen_sink);
-  arrObj.push(kitchen_sink);
-
-  kitchen_sink.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-
-  scene.add(kitchen_sink);
-});
-
-
-loader.load("public/armchair.glb", function (gltf) {
-  let armchair = gltf.scene;
-  armchair.position.set(-100, 0, -200);
-  armchair.position.set(-100, 0, -200);
-  armchair.scale.set(150, 150, 150);
-  worldOctree.fromGraphNode(armchair);
-  arrObj.push(armchair);
-
-  armchair.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-  scene.add(armchair);
-});
-
-loader.load("public/air_conditioner.glb", function (gltf) {
-  let air_conditioner = gltf.scene;
-  air_conditioner.position.set(-100, 50, -200);
-  air_conditioner.scale.set(10, 10, 10);
-  worldOctree.fromGraphNode(air_conditioner);
-  arrObj.push(air_conditioner);
-
-  air_conditioner.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-  scene.add(air_conditioner);
-});
-
-loader.load("public/aveiro_sideboard_natural_oak_and_white.glb", function (gltf) {
-  let sideboard = gltf.scene;
-  sideboard.position.set(-50, 0, -200);
-  worldOctree.fromGraphNode(sideboard);
-  arrObj.push(sideboard);
-
-  sideboard.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-  scene.add(sideboard);
-});
-
-loader.load("public/bed.glb", function (gltf) {
-  let bed = gltf.scene;
-  bed.position.set(-50, 0, -400);
-  worldOctree.fromGraphNode(bed);
-  arrObj.push(bed);
-
-  bed.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-  scene.add(bed);
-});
-// loader.load("public/oven.glb", function (gltf) {
-//   let oven = gltf.scene;
-//   oven.position.set(-300, 0, -200);
-//   oven.scale.set(50, 50, 50);
-//   worldOctree.fromGraphNode(oven);
-//   arrObj.push(oven);
-
-//   oven.traverse((child) => {
-//     if (child.isMesh) {
-//       child.castShadow = true; // Enable shadow casting
-//       child.receiveShadow = true; // Enable shadow receiving
-//     }
-//   });
-//   scene.add(oven);
-// });
-
-let pivot = new THREE.Object3D();
-scene.add(pivot);
-let door
-loader.load("public/door.glb", function (gltf) {
-  door = gltf.scene;
-  door.position.set(-200, 0, -200);
-  door.scale.set(150, 150, 150);
-  worldOctree.fromGraphNode(door);
-  arrObj.push(door);
-
-  door.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Enable shadow casting
-      child.receiveShadow = true; // Enable shadow receiving
-    }
-  });
-
-  // Add the door to the pivot
-  pivot.add(door);
-  door.position.set(-door.geometry.parameters.width / 2, 0, 0);
-
-  scene.add(door);
-});
 // Load and add the IKEA lamp model
 loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
@@ -235,7 +100,7 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
 
 loader.load("public/house.glb", function (gltf) {
   const apartment = gltf.scene;
-  apartment.scale.set(3, 3, 3); 
+  apartment.scale.set(3, 3, 3);
   // worldOctree.fromGraphNode(gltf.scene);
   apartment.position.set(-500, 0, 0);
   apartment.traverse((child) => {
@@ -245,26 +110,6 @@ loader.load("public/house.glb", function (gltf) {
     }
   });
   scene.add(apartment);
-});
-
-// Load and add the fridge model
-let fridgeDegrees = 270;
-let fridgeRadians = THREE.MathUtils.degToRad(fridgeDegrees);
-loader.load("public/fridge.glb", function (gltf) {
-  const fridge = gltf.scene;
-  fridge.position.set(-200, 0, -150);
-  fridge.scale.set(100, 100, 100);
-  // fridge.rotateY(radians);
-  fridge.rotateY(fridgeRadians);
-  worldOctree.fromGraphNode(fridge);
-  scene.add(fridge);
-
-  fridge.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Allow the model to cast shadows
-      child.receiveShadow = true; // Allow the model to receive shadows
-    }
-  });
 });
 
 // Load and add the light bulb model
@@ -328,116 +173,11 @@ scene.add(ambientLight);
 // directionalLight.shadow.camera.near = 0.5;
 // directionalLight.shadow.camera.far = 500;
 
-// set bounding box
-function setPositionScaleRotation(object, position, scale, rotation) {
-  object.position.set(...position);
-  object.scale.set(...scale);
-  object.rotation.set(...rotation.map((deg) => (deg * Math.PI) / 180));
-}
+// colision
+// const { colision } = require("./colision");
+// import { colision } from "./colision";
 
-function createBoundingBox(
-  scene,
-  position,
-  scale,
-  rotation,
-  octree,
-  boundingBox,
-  interactibles
-) {
-  const cube = new THREE.Mesh(geometry, material);
-  setPositionScaleRotation(cube, position, scale, rotation);
-  octree.fromGraphNode(cube);
-  scene.add(cube);
-
-  const edges = new THREE.EdgesGeometry(cube.geometry);
-  const line = new THREE.LineSegments(edges, lineMaterial);
-  line.position.copy(cube.position);
-  line.scale.copy(cube.scale);
-  line.rotation.copy(cube.rotation);
-  scene.add(line);
-
-  boundingBox.push({
-    cube: cube,
-    line: line,
-  });
-
-  if (interactibles) {
-    // console.log("yay");
-    interactibles.boundingBox = {
-      cube: cube,
-      line: line,
-    };
-  }
-}
-
-// buat bounding box untuk setiap object
-//tembok kanan
-createBoundingBox(
-  scene,
-  [-250, 0, -620],
-  [2000, 100, 10],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-//tmbk Belakang
-createBoundingBox(
-  scene,
-  [30, 0, 0],
-  [10, 100, 1200],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-
-// tmbk kiri (besar)
-createBoundingBox(
-  scene,
-  [-145, 0, 169],
-  [820, 100, 10],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-//tengah kiri
-createBoundingBox(
-  scene,
-  [-550, 0, 340],
-  [10, 100, 500],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-
-//tengah kanan
-createBoundingBox(
-  scene,
-  [-550, 0, -350],
-  [10, 100, 550],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-
-//tmbk Depan
-createBoundingBox(
-  scene,
-  [-1250, 0, 0],
-  [10, 100, 1200],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-// tembok kiri depan
-createBoundingBox(
-  scene,
-  [-830, 0, 580],
-  [820, 100, 10],
-  [0, 0, 0],
-  worldOctree,
-  boundingBox
-);
-
+colision(scene, worldOctree, boundingBox);
 // tmbk belakang kanan (kecil)
 // createBoundingBox(
 //   scene,
@@ -611,29 +351,19 @@ function movement(deltaTime) {
 
   if (keyboardState["KeyE"]) {
     let camPos = camera.position;
-    let objPos = arrObj[0].position;
-    console.log(camPos, objPos);
+    console.log(camPos);
+    // let objPos = arrObj[0].position;
+    // console.log(camPos, objPos);
 
-    let dist = camPos.distanceTo(objPos);
-    console.log(camPos, objPos, dist);
+    // let dist = camPos.distanceTo(objPos);
+    // console.log(camPos, objPos, dist);
 
-    if (dist <= 120) {
-      console.log("interact");
-    } else {
-      console.log("sek lama");
-    }
+    // if (dist <= 120) {
+    //   console.log("interact");
+    // } else {
+    //   console.log("sek lama");
+    // }
   }
-
-  // playerVelocity.addScaledVector(playerVelocity, damping);
-
-  // const deltaPosition = playerVelocity.clone().multiplyScalar(deltaTime);
-  // playerCollider.translate(deltaPosition);
-
-  // camera.position.copy(playerCollider.end);
-
-  // if (direction != null) {
-  //   camera.position.add(direction);
-  // }
 }
 
 // const helper = new OctreeHelper(worldOctree);
@@ -642,12 +372,12 @@ function movement(deltaTime) {
 
 // Animation loop
 
-
 function animate() {
   requestAnimationFrame(animate);
-  if (door.rotation.y > -Math.PI / 2) { // -90 degrees in radians
-    door.rotation.y -= 0.01; // adjust speed of rotation here
-  }
+  // if (door.rotation.y > -Math.PI / 2) {
+  //   // -90 degrees in radians
+  //   door.rotation.y -= 0.01; // adjust speed of rotation here
+  // }
   const deltaTime = Math.min(0.05, clock.getDelta());
   movement(deltaTime);
   updatePlayer(deltaTime);
