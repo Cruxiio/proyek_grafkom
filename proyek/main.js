@@ -159,6 +159,21 @@ loader.load("public/aveiro_sideboard_natural_oak_and_white.glb", function (gltf)
   });
   scene.add(sideboard);
 });
+
+loader.load("public/bed.glb", function (gltf) {
+  let bed = gltf.scene;
+  bed.position.set(-50, 0, -400);
+  worldOctree.fromGraphNode(bed);
+  arrObj.push(bed);
+
+  bed.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Enable shadow casting
+      child.receiveShadow = true; // Enable shadow receiving
+    }
+  });
+  scene.add(bed);
+});
 // loader.load("public/oven.glb", function (gltf) {
 //   let oven = gltf.scene;
 //   oven.position.set(-300, 0, -200);
