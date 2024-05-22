@@ -58,7 +58,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     shelves.position.set(-515, 0, -300);
     shelves.rotateY((Math.PI / 2) * 1);
     // shelves.scale.set(100, 100, 100);
-    worldOctree.fromGraphNode(shelves);
+    // worldOctree.fromGraphNode(shelves);
     arrObj.push(shelves);
 
     shelves.traverse((child) => {
@@ -69,6 +69,23 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     });
 
     scene.add(shelves);
+  });
+  loader.load("public/door.glb", function (gltf) {
+    let door = gltf.scene;
+    door.position.set(-550, 0, 5);
+    door.rotateY((Math.PI / 2) * 2);
+    door.scale.set(100, 100, 127.5);
+    worldOctree.fromGraphNode(door)
+    arrObj.push(door);
+
+    door.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+
+    scene.add(door);
   });
 
   loader.load("public/office_chair_low-poly.glb", function (gltf) {
@@ -220,43 +237,4 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     });
     scene.add(bed);
   });
-  // loader.load("public/oven.glb", function (gltf) {
-  //   let oven = gltf.scene;
-  //   oven.position.set(-300, 0, -200);
-  //   oven.scale.set(50, 50, 50);
-  //   worldOctree.fromGraphNode(oven);
-  //   arrObj.push(oven);
-
-  //   oven.traverse((child) => {
-  //     if (child.isMesh) {
-  //       child.castShadow = true; // Enable shadow casting
-  //       child.receiveShadow = true; // Enable shadow receiving
-  //     }
-  //   });
-  //   scene.add(oven);
-  // });
-
-  //   let pivot = new THREE.Object3D();
-  //   scene.add(pivot);
-  //   let door;
-  //   loader.load("public/door.glb", function (gltf) {
-  //     door = gltf.scene;
-  //     door.position.set(-200, 0, -200);
-  //     door.scale.set(150, 150, 150);
-  //     worldOctree.fromGraphNode(door);
-  //     arrObj.push(door);
-
-  //     door.traverse((child) => {
-  //       if (child.isMesh) {
-  //         child.castShadow = true; // Enable shadow casting
-  //         child.receiveShadow = true; // Enable shadow receiving
-  //       }
-  //     });
-
-  //     // Add the door to the pivot
-  //     // pivot.add(door);
-  //     // door.position.set(-door.geometry.parameters.width / 2, 0, 0);
-
-  //     scene.add(door);
-  //   });
 }

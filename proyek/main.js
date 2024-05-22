@@ -177,7 +177,7 @@ loader.load("public/led_light_bulb.glb", function (gltf) {
   lightBulb.rotateX(radians);
   scene.add(lightBulb);
 
-  const light = new THREE.PointLight(0xffffff, 100000, 10000); // Increased intensity
+  const light = new THREE.PointLight(0xffffff, 200000, 20000); // Increased intensity
   light.position.set(-200, 400, -300);
   light.castShadow = true;
   light.shadow.mapSize.width = 1024;
