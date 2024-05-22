@@ -98,6 +98,60 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
   scene.add(light);
 });
 
+loader.load("public/ikea_lamp.glb", function (gltf) {
+  const ikeaLamp = gltf.scene;
+  ikeaLamp.position.set(-1200, 0, -600);
+  worldOctree.fromGraphNode(ikeaLamp);
+  arrObj.push(ikeaLamp);
+  scene.add(ikeaLamp);
+
+  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light.position.set(-1200, 100, -600); // Position the light at the same location as the light bulb
+  light.castShadow = true; // Enable shadows for the point light
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
+  // light.shadow.bias= 0.005
+  light.shadow.normalBias = 0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
+  scene.add(light);
+});
+loader.load("public/ikea_lamp.glb", function (gltf) {
+  const ikeaLamp = gltf.scene;
+  ikeaLamp.position.set(-800, 0, 150);
+  worldOctree.fromGraphNode(ikeaLamp);
+  arrObj.push(ikeaLamp);
+  scene.add(ikeaLamp);
+
+  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light.position.set(-800, 100, 150); // Position the light at the same location as the light bulb
+  light.castShadow = true; // Enable shadows for the point light
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
+  // light.shadow.bias= 0.005
+  light.shadow.normalBias = 0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
+  scene.add(light);
+});
+loader.load("public/ikea_lamp.glb", function (gltf) {
+  const ikeaLamp = gltf.scene;
+  ikeaLamp.position.set(-1200, 0, 500);
+  worldOctree.fromGraphNode(ikeaLamp);
+  arrObj.push(ikeaLamp);
+  scene.add(ikeaLamp);
+
+  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light.position.set(-1200, 100, 500); // Position the light at the same location as the light bulb
+  light.castShadow = true; // Enable shadows for the point light
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
+  // light.shadow.bias= 0.005
+  light.shadow.normalBias = 0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
+  scene.add(light);
+});
 loader.load("public/house.glb", function (gltf) {
   const apartment = gltf.scene;
   apartment.scale.set(3, 3, 3);
@@ -119,12 +173,12 @@ radians = THREE.MathUtils.degToRad(degrees);
 let lightBulb;
 loader.load("public/led_light_bulb.glb", function (gltf) {
   lightBulb = gltf.scene;
-  lightBulb.position.set(-200, 235, 0);
+  lightBulb.position.set(-200, 400, -300);
   lightBulb.rotateX(radians);
   scene.add(lightBulb);
 
   const light = new THREE.PointLight(0xffffff, 100000, 10000); // Increased intensity
-  light.position.set(-200, 230, 0);
+  light.position.set(-200, 400, -300);
   light.castShadow = true;
   light.shadow.mapSize.width = 1024;
   light.shadow.mapSize.height = 1024;
@@ -149,6 +203,71 @@ loader.load("public/led_light_bulb.glb", function (gltf) {
   });
 });
 
+loader.load("public/led_light_bulb.glb", function (gltf) {
+  lightBulb = gltf.scene;
+  lightBulb.position.set(-700, 400, -300);
+  lightBulb.rotateX(radians);
+  scene.add(lightBulb);
+
+  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light.position.set(-700, 400, -300);
+  light.castShadow = true;
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
+  light.shadow.bias = -0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
+  scene.add(light);
+
+  lightBulb.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = false; // Light bulb should not cast shadows
+      child.receiveShadow = true; // Light bulb should receive shadows
+    }
+  });
+
+  scene.traverse((child) => {
+    if (child !== lightBulb && child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+});
+
+loader.load("public/led_light_bulb.glb", function (gltf) {
+  lightBulb = gltf.scene;
+  lightBulb.position.set(-700, 400, 300);
+  lightBulb.rotateX(radians);
+  scene.add(lightBulb);
+
+  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light.position.set(-700, 400, 300);
+  light.castShadow = true;
+  light.shadow.mapSize.width = 1024;
+  light.shadow.mapSize.height = 1024;
+  light.shadow.bias = -0.05;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.near = 0.5;
+  light.shadow.camera.far = 50;
+  scene.add(light);
+
+  lightBulb.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = false; // Light bulb should not cast shadows
+      child.receiveShadow = true; // Light bulb should receive shadows
+    }
+  });
+
+  scene.traverse((child) => {
+    if (child !== lightBulb && child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+});
+
+
 // Configure renderer for shadows
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appearance
@@ -160,8 +279,8 @@ renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appea
 //   }
 // });
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// scene.add(ambientLight);
 
 // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 // directionalLight.position.set(0, 1, 0);
