@@ -24,7 +24,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     table_and_chairs.scale.set(100, 100, 100);
     table_and_chairs.rotateY((Math.PI / 2) * 3);
     worldOctree.fromGraphNode(table_and_chairs);
-    arrObj.push(table_and_chairs);
+    // arrObj.push(table_and_chairs);
 
     table_and_chairs.traverse((child) => {
       if (child.isMesh) {
@@ -41,7 +41,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     coffee_table_marina.position.set(-300, 0, 1);
     coffee_table_marina.scale.set(0.2, 0.2, 0.2);
     worldOctree.fromGraphNode(coffee_table_marina);
-    arrObj.push(coffee_table_marina);
+    // arrObj.push(coffee_table_marina);
 
     coffee_table_marina.traverse((child) => {
       if (child.isMesh) {
@@ -59,7 +59,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     shelves.rotateY((Math.PI / 2) * 1);
     // shelves.scale.set(100, 100, 100);
     // worldOctree.fromGraphNode(shelves);
-    arrObj.push(shelves);
+    // arrObj.push(shelves);
 
     shelves.traverse((child) => {
       if (child.isMesh) {
@@ -70,29 +70,12 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
 
     scene.add(shelves);
   });
-  loader.load("public/door.glb", function (gltf) {
-    let door = gltf.scene;
-    door.position.set(-550, 0, 5);
-    door.rotateY((Math.PI / 2) * 2);
-    door.scale.set(100, 100, 127.5);
-    worldOctree.fromGraphNode(door)
-    arrObj.push(door);
-
-    door.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true; // Enable shadow casting
-        child.receiveShadow = true; // Enable shadow receiving
-      }
-    });
-
-    scene.add(door);
-  });
 
   loader.load("public/office_chair_low-poly.glb", function (gltf) {
     let chair = gltf.scene;
     chair.position.set(-450, 0, 1);
     worldOctree.fromGraphNode(chair);
-    arrObj.push(chair);
+    // arrObj.push(chair);
 
     chair.traverse((child) => {
       if (child.isMesh) {
@@ -109,7 +92,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     kitchen_sink.scale.set(100, 100, 100);
     kitchen_sink.rotateY((Math.PI / 2) * 3);
     worldOctree.fromGraphNode(kitchen_sink);
-    arrObj.push(kitchen_sink);
+    // arrObj.push(kitchen_sink);
 
     kitchen_sink.traverse((child) => {
       if (child.isMesh) {
@@ -125,7 +108,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     desk.position.set(-1000, 0, 550);
     desk.scale.set(10, 10, 10);
     worldOctree.fromGraphNode(desk);
-    arrObj.push(desk);
+    // arrObj.push(desk);
 
     desk.traverse((child) => {
       if (child.isMesh) {
@@ -142,7 +125,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     wardrobe.scale.set(100, 100, 100);
     wardrobe.rotateY((Math.PI / 2) * 3);
     worldOctree.fromGraphNode(wardrobe);
-    arrObj.push(wardrobe);
+    // arrObj.push(wardrobe);
 
     wardrobe.traverse((child) => {
       if (child.isMesh) {
@@ -176,7 +159,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     armchair.position.set(-100, 0, -200);
     armchair.scale.set(150, 150, 150);
     worldOctree.fromGraphNode(armchair);
-    arrObj.push(armchair);
+    // arrObj.push(armchair);
 
     armchair.traverse((child) => {
       if (child.isMesh) {
@@ -193,7 +176,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     air_conditioner.scale.set(10, 10, 10);
     air_conditioner.rotateY(Math.PI / 2);
     worldOctree.fromGraphNode(air_conditioner);
-    arrObj.push(air_conditioner);
+    // arrObj.push(air_conditioner);
 
     air_conditioner.traverse((child) => {
       if (child.isMesh) {
@@ -211,7 +194,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
       sideboard.position.set(-580, 0, -444);
       sideboard.rotateY((Math.PI / 2) * 3);
       worldOctree.fromGraphNode(sideboard);
-      arrObj.push(sideboard);
+      // arrObj.push(sideboard);
 
       sideboard.traverse((child) => {
         if (child.isMesh) {
@@ -227,7 +210,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     let bed = gltf.scene;
     bed.position.set(-100, 0, -505);
     worldOctree.fromGraphNode(bed);
-    arrObj.push(bed);
+    // arrObj.push(bed);
 
     bed.traverse((child) => {
       if (child.isMesh) {

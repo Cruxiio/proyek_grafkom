@@ -20,7 +20,7 @@ function setPositionScaleRotation(object, position, scale, rotation) {
   object.rotation.set(...rotation.map((deg) => (deg * Math.PI) / 180));
 }
 
-function createBoundingBox(
+export function createBoundingBox(
   scene,
   position,
   scale,
@@ -52,6 +52,14 @@ function createBoundingBox(
       cube: cube,
       line: line,
     };
+  }
+}
+
+export function changeMaterialOpacity(state) {
+  if (state) {
+    lineMaterial.opacity = 1;
+  } else {
+    lineMaterial.opacity = 0;
   }
 }
 
@@ -115,6 +123,16 @@ export function colision(scene, worldOctree, boundingBox, interactibles) {
     boundingBox
   );
   // tembok kiri depan
+  createBoundingBox(
+    scene,
+    [-830, 0, 580],
+    [820, 100, 10],
+    [0, 0, 0],
+    worldOctree,
+    boundingBox
+  );
+
+  // pintu
   createBoundingBox(
     scene,
     [-830, 0, 580],

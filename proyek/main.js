@@ -4,7 +4,11 @@ import { PointerLockControls } from "three/addons/controls/PointerLockControls.j
 import { Octree } from "three/addons/math/Octree.js";
 import { Capsule } from "three/addons/math/Capsule.js";
 import { OctreeHelper } from "three/addons/helpers/OctreeHelper.js";
-import { colision } from "./colision.js";
+import {
+  changeMaterialOpacity,
+  colision,
+  createBoundingBox,
+} from "./colision.js";
 import { loadModels } from "./loadModel.js";
 
 const worldOctree = new Octree();
@@ -35,7 +39,10 @@ const clock = new THREE.Clock();
 
 // state
 let lineHelper = false;
+let doorState = 0;
+let isInteract = false;
 let arrObj = [];
+let doorLoaded = false;
 
 // setup scene
 const scene = new THREE.Scene();
@@ -78,12 +85,65 @@ scene.add(controls.getObject());
 
 loadModels(scene, loader, worldOctree, arrObj);
 
+// Buat objek Pivot
+let pivot = new THREE.Object3D();
+pivot.position.set(-550, 0, -70);
+scene.add(pivot);
+
+loader.load("public/door.glb", function (gltf) {
+  let door = gltf.scene;
+
+  door.name = "door";
+
+  // Tentukan ukuran pintu untuk menemukan titik ujung kanan (misalnya, menggunakan bounding box)
+  let bbox = new THREE.Box3().setFromObject(door);
+  let doorWidth = bbox.max.z - bbox.min.z;
+  // console.log(doorWidth);
+  // door.position.set(-550, 0, 5);
+  door.position.set(0, 0, 70);
+  door.rotateY((Math.PI / 2) * 2);
+  door.scale.set(100, 100, 127.5);
+  // worldOctree.fromGraphNode(door);
+
+  pivot.add(door);
+
+  // create collision box
+  createBoundingBox(
+    pivot,
+    [0, 0, 70],
+    [5, 500, 140],
+    [0, 0, 0],
+    worldOctree,
+    boundingBox
+  );
+
+  // // Posisikan pivot pada lokasi ujung kanan pintu
+  // pivot.position.set(bbox.max.x, 0, 0);
+
+  //  // Rotasi pivot untuk merotasi pintu
+  // pivot.rotation.y = Math.PI / 2; // 90 derajat dalam radian
+  // door.position.set(-door.geometry.parameters.width / 2, 0, 0);
+
+  arrObj.push(door);
+
+  door.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Enable shadow casting
+      child.receiveShadow = true; // Enable shadow receiving
+    }
+  });
+
+  // scene.add(pivot);
+  doorLoaded = true;
+  // scene.add(door);
+});
+
 // Load and add the IKEA lamp model
 loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
   ikeaLamp.position.set(-100, 0, 50);
   worldOctree.fromGraphNode(ikeaLamp);
-  arrObj.push(ikeaLamp);
+  // arrObj.push(ikeaLamp);
   scene.add(ikeaLamp);
 
   const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
@@ -102,7 +162,7 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
   ikeaLamp.position.set(-1200, 0, -600);
   worldOctree.fromGraphNode(ikeaLamp);
-  arrObj.push(ikeaLamp);
+  // arrObj.push(ikeaLamp);
   scene.add(ikeaLamp);
 
   const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
@@ -120,7 +180,7 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
   ikeaLamp.position.set(-800, 0, 150);
   worldOctree.fromGraphNode(ikeaLamp);
-  arrObj.push(ikeaLamp);
+  // arrObj.push(ikeaLamp);
   scene.add(ikeaLamp);
 
   const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
@@ -138,7 +198,7 @@ loader.load("public/ikea_lamp.glb", function (gltf) {
   const ikeaLamp = gltf.scene;
   ikeaLamp.position.set(-1200, 0, 500);
   worldOctree.fromGraphNode(ikeaLamp);
-  arrObj.push(ikeaLamp);
+  // arrObj.push(ikeaLamp);
   scene.add(ikeaLamp);
 
   const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
@@ -267,7 +327,6 @@ loader.load("public/led_light_bulb.glb", function (gltf) {
   });
 });
 
-
 // Configure renderer for shadows
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appearance
@@ -291,10 +350,6 @@ renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appea
 // directionalLight.shadow.mapSize.height = 1024;
 // directionalLight.shadow.camera.near = 0.5;
 // directionalLight.shadow.camera.far = 500;
-
-// colision
-// const { colision } = require("./colision");
-// import { colision } from "./colision";
 
 colision(scene, worldOctree, boundingBox);
 // tmbk belakang kanan (kecil)
@@ -461,27 +516,45 @@ function movement(deltaTime) {
 
   if (keyboardState["KeyH"]) {
     lineHelper = !lineHelper;
-    if (lineHelper) {
-      lineMaterial.opacity = 1;
-    } else {
-      lineMaterial.opacity = 0;
-    }
+    changeMaterialOpacity(lineHelper);
   }
 
   if (keyboardState["KeyE"]) {
+    isInteract = true;
+
     let camPos = camera.position;
-    console.log(camPos);
-    // let objPos = arrObj[0].position;
+    // console.log(camPos);
+    let door = scene.getObjectByName("door");
+    let objPos = door.position;
     // console.log(camPos, objPos);
 
-    // let dist = camPos.distanceTo(objPos);
-    // console.log(camPos, objPos, dist);
+    let dist = camPos.distanceTo(objPos);
 
-    // if (dist <= 120) {
-    //   console.log("interact");
-    // } else {
-    //   console.log("sek lama");
-    // }
+    if (
+      dist >= 510 &&
+      dist < 560 &&
+      camPos.x <= -500 &&
+      camPos.x > -540 &&
+      camPos.z < 66 &&
+      camPos.z > -40 &&
+      doorState == 0
+    ) {
+      doorState = 1;
+      // console.log("hehe");
+    }
+    // klo dari arah bklg
+    else if (
+      dist >= 560 &&
+      dist < 595 &&
+      camPos.x <= -568 &&
+      camPos.x > -590 &&
+      camPos.z < 66 &&
+      camPos.z > -40 &&
+      doorState == 0
+    ) {
+      doorState = 3;
+      // console.log("sek lama");
+    }
   }
 }
 
@@ -493,10 +566,60 @@ function movement(deltaTime) {
 
 function animate() {
   requestAnimationFrame(animate);
-  // if (door.rotation.y > -Math.PI / 2) {
-  //   // -90 degrees in radians
-  //   door.rotation.y -= 0.01; // adjust speed of rotation here
-  // }
+  // cek apakah udh keload model doornya
+  if (doorLoaded) {
+    let door = scene.getObjectByName("door");
+
+    //rotasi pivot hingga 90derajat
+    // buka ke dpn
+    if (doorState == 1 && isInteract) {
+      if (pivot.rotation.y > -Math.PI / 2) {
+        pivot.rotation.y -= 0.01;
+      }
+
+      if (pivot.rotation.y <= -Math.PI / 2) {
+        doorState = 2;
+        isInteract = false;
+      }
+      // tutup dr depan
+    } else if (doorState == 2 && isInteract) {
+      // console.log("masuk");
+      if (pivot.rotation.y < 0) {
+        pivot.rotation.y += 0.01;
+      }
+
+      if (pivot.rotation.y >= 0) {
+        doorState = 0;
+        isInteract = false;
+      }
+    }
+    // buka dari belakang
+    else if (doorState == 3 && isInteract) {
+      // console.log("masuk");
+      if (pivot.rotation.y < Math.PI / 2) {
+        pivot.rotation.y += 0.01;
+      }
+
+      if (pivot.rotation.y >= Math.PI / 2) {
+        doorState = 4;
+        isInteract = false;
+      }
+    }
+    // tutup dari belakang
+    else if (doorState == 4 && isInteract) {
+      // console.log("masuk");
+      if (pivot.rotation.y > 0) {
+        pivot.rotation.y -= 0.01;
+      }
+
+      if (pivot.rotation.y <= 0) {
+        doorState = 0;
+        isInteract = false;
+      }
+    }
+  }
+
+  // console.log(arrObj[0]);
   const deltaTime = Math.min(0.05, clock.getDelta());
   movement(deltaTime);
   updatePlayer(deltaTime);
