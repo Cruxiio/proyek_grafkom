@@ -90,6 +90,37 @@ let pivot = new THREE.Object3D();
 pivot.position.set(-550, 0, -70);
 scene.add(pivot);
 
+
+const video = document.createElement('video');
+video.src = './public/video.mp4'; // Set the path to your video file
+video.load(); // Load the video
+video.play(); // Play the video
+
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.format = THREE.RGBFormat;
+
+const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+
+loader.load("public/low_poly_gaming_desk.glb", function (gltf) {
+  let gaming_desk = gltf.scene;
+  gaming_desk.position.set(-430, 70, -500);
+  gaming_desk.scale.set(100, 100, 100);
+  gaming_desk.rotateY((Math.PI / 2) * 1);
+  worldOctree.fromGraphNode(gaming_desk);
+  // arrObj.push(wardrobe);
+
+  gaming_desk.traverse((child) => {
+    if (child.isMesh) {
+      console.log(child.name);
+      child.castShadow = true; // Enable shadow casting
+      child.receiveShadow = true; // Enable shadow receiving
+    }
+  })
+  scene.add(gaming_desk);
+});
+
 loader.load("public/door.glb", function (gltf) {
   let door = gltf.scene;
 
@@ -140,77 +171,85 @@ loader.load("public/door.glb", function (gltf) {
 
 // Load and add the IKEA lamp model
 loader.load("public/ikea_lamp.glb", function (gltf) {
-  const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(-100, 0, 50);
-  worldOctree.fromGraphNode(ikeaLamp);
+  const ikeaLamp1 = gltf.scene;
+  ikeaLamp1.position.set(-100, 0, 50);
+  worldOctree.fromGraphNode(ikeaLamp1);
+  ikeaLamp1.name = "ikeaLamp1";
   // arrObj.push(ikeaLamp);
-  scene.add(ikeaLamp);
+  scene.add(ikeaLamp1);
 
-  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
-  light.position.set(-100, 125, 0); // Position the light at the same location as the light bulb
-  light.castShadow = true; // Enable shadows for the point light
-  light.shadow.mapSize.width = 1024;
-  light.shadow.mapSize.height = 1024;
+  const light1 = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light1.position.set(-100, 125, 0); // Position the light at the same location as the light bulb
+  light1.castShadow = true; // Enable shadows for the point light
+  light1.shadow.mapSize.width = 1024;
+  light1.shadow.mapSize.height = 1024;
   // light.shadow.bias= 0.005
-  light.shadow.normalBias = 0.05;
-  light.shadow.camera.near = 0.5;
-  light.shadow.camera.far = 50;
-  scene.add(light);
+  light1.name = "light1";
+  light1.shadow.normalBias = 0.05;
+  light1.shadow.camera.near = 0.5;
+  light1.shadow.camera.far = 50;
+  scene.add(light1);
 });
 
 loader.load("public/ikea_lamp.glb", function (gltf) {
-  const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(-1200, 0, -600);
-  worldOctree.fromGraphNode(ikeaLamp);
+  const ikeaLamp2 = gltf.scene;
+  ikeaLamp2.position.set(-1200, 0, -600);
+  worldOctree.fromGraphNode(ikeaLamp2);
+  ikeaLamp2.name = "ikeaLamp2";
   // arrObj.push(ikeaLamp);
-  scene.add(ikeaLamp);
+  scene.add(ikeaLamp2);
 
-  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
-  light.position.set(-1200, 100, -600); // Position the light at the same location as the light bulb
-  light.castShadow = true; // Enable shadows for the point light
-  light.shadow.mapSize.width = 1024;
-  light.shadow.mapSize.height = 1024;
+  const light2 = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light2.position.set(-1200, 100, -600); // Position the light at the same location as the light bulb
+  light2.castShadow = true; // Enable shadows for the point light
+  light2.shadow.mapSize.width = 1024;
+  light2.shadow.mapSize.height = 1024;
   // light.shadow.bias= 0.005
-  light.shadow.normalBias = 0.05;
-  light.shadow.camera.near = 0.5;
-  light.shadow.camera.far = 50;
-  scene.add(light);
+  light2.name = "light2";
+  light2.shadow.normalBias = 0.05;
+  light2.shadow.camera.near = 0.5;
+  light2.shadow.camera.far = 50;
+  scene.add(light2);
 });
 loader.load("public/ikea_lamp.glb", function (gltf) {
-  const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(-800, 0, 150);
-  worldOctree.fromGraphNode(ikeaLamp);
+  const ikeaLamp3 = gltf.scene;
+  ikeaLamp3.position.set(-800, 0, 150);
+  worldOctree.fromGraphNode(ikeaLamp3);
+  ikeaLamp3.name = "ikeaLamp3";
   // arrObj.push(ikeaLamp);
-  scene.add(ikeaLamp);
+  scene.add(ikeaLamp3);
 
-  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
-  light.position.set(-800, 100, 150); // Position the light at the same location as the light bulb
-  light.castShadow = true; // Enable shadows for the point light
-  light.shadow.mapSize.width = 1024;
-  light.shadow.mapSize.height = 1024;
+  const light3 = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light3.position.set(-800, 100, 150); // Position the light at the same location as the light bulb
+  light3.castShadow = true; // Enable shadows for the point light
+  light3.shadow.mapSize.width = 1024;
+  light3.shadow.mapSize.height = 1024;
+  light3.name = "light3";
   // light.shadow.bias= 0.005
-  light.shadow.normalBias = 0.05;
-  light.shadow.camera.near = 0.5;
-  light.shadow.camera.far = 50;
-  scene.add(light);
+  light3.shadow.normalBias = 0.05;
+  light3.shadow.camera.near = 0.5;
+  light3.shadow.camera.far = 50;
+  scene.add(light3);
 });
 loader.load("public/ikea_lamp.glb", function (gltf) {
-  const ikeaLamp = gltf.scene;
-  ikeaLamp.position.set(-1200, 0, 500);
-  worldOctree.fromGraphNode(ikeaLamp);
+  const ikeaLamp4 = gltf.scene;
+  ikeaLamp4.position.set(-1200, 0, 500);
+  worldOctree.fromGraphNode(ikeaLamp4);
+  ikeaLamp4.name = "ikeaLamp4";
   // arrObj.push(ikeaLamp);
-  scene.add(ikeaLamp);
+  scene.add(ikeaLamp4);
 
-  const light = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
-  light.position.set(-1200, 100, 500); // Position the light at the same location as the light bulb
-  light.castShadow = true; // Enable shadows for the point light
-  light.shadow.mapSize.width = 1024;
-  light.shadow.mapSize.height = 1024;
+  const light4 = new THREE.PointLight(0xffffff, 100000, 100000); // Increased intensity
+  light4.position.set(-1200, 100, 500); // Position the light at the same location as the light bulb
+  light4.castShadow = true; // Enable shadows for the point light
+  light4.shadow.mapSize.width = 1024;
+  light4.shadow.mapSize.height = 1024;
   // light.shadow.bias= 0.005
-  light.shadow.normalBias = 0.05;
-  light.shadow.camera.near = 0.5;
-  light.shadow.camera.far = 50;
-  scene.add(light);
+  light4.name = "light4";
+  light4.shadow.normalBias = 0.05;
+  light4.shadow.camera.near = 0.5;
+  light4.shadow.camera.far = 50;
+  scene.add(light4);
 });
 loader.load("public/house.glb", function (gltf) {
   const apartment = gltf.scene;
@@ -464,6 +503,17 @@ function updatePlayer(deltaTime) {
   camera.position.copy(playerCollider.end);
 }
 
+function toggleLight(lightName) {
+  const light = scene.getObjectByName(lightName);
+  // console.log(light.intensity);
+  if (light) {
+    if(light.intensity ==0){
+      light.intensity= 100000
+    }else{
+      light.intensity= 0
+    }
+  }
+}
 function movement(deltaTime) {
   // gives a bit of air control
   let playerOnFloor = true;
@@ -521,7 +571,6 @@ function movement(deltaTime) {
 
   if (keyboardState["KeyE"]) {
     isInteract = true;
-
     let camPos = camera.position;
     // console.log(camPos);
     let door = scene.getObjectByName("door");
@@ -554,9 +603,34 @@ function movement(deltaTime) {
     ) {
       doorState = 3;
       // console.log("sek lama");
-    }
+   }
+   let  ikeaLamp1= scene.getObjectByName("ikeaLamp1");
+   let lightDist1 = camPos.distanceTo(ikeaLamp1.position);
+   if(lightDist1<200){
+    // console.log(light1.intensity);
+    toggleLight("light1");
+   }
+   let  ikeaLamp2= scene.getObjectByName("ikeaLamp2");
+   let lightDist2 = camPos.distanceTo(ikeaLamp2.position);
+   if(lightDist2<200){
+    // console.log(light1.intensity);
+    toggleLight("light2");
+   }
+   let  ikeaLamp3= scene.getObjectByName("ikeaLamp3");
+   let lightDist3 = camPos.distanceTo(ikeaLamp3.position);
+   if(lightDist3<200){
+    // console.log(light1.intensity);
+    toggleLight("light3");
+   }
+   let  ikeaLamp4= scene.getObjectByName("ikeaLamp4");
+   let lightDist4 = camPos.distanceTo(ikeaLamp4.position);
+   if(lightDist4<200){
+    // console.log(light1.intensity);
+    toggleLight("light4");
+   }
   }
 }
+
 
 // const helper = new OctreeHelper(worldOctree);
 // helper.visible = true;

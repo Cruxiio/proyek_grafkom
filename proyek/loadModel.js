@@ -23,7 +23,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     table_and_chairs.position.set(-800, 0, 0);
     table_and_chairs.scale.set(100, 100, 100);
     table_and_chairs.rotateY((Math.PI / 2) * 3);
-    worldOctree.fromGraphNode(table_and_chairs);
+    // worldOctree.fromGraphNode(table_and_chairs);
     // arrObj.push(table_and_chairs);
 
     table_and_chairs.traverse((child) => {
@@ -143,7 +143,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     fridge.position.set(-800, 0, 550);
     fridge.scale.set(100, 100, 100);
     fridge.rotateY(Math.PI / 2);
-    worldOctree.fromGraphNode(fridge);
+    // worldOctree.fromGraphNode(fridge);
     scene.add(fridge);
 
     fridge.traverse((child) => {
@@ -158,7 +158,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     let armchair = gltf.scene;
     armchair.position.set(-100, 0, -200);
     armchair.scale.set(150, 150, 150);
-    worldOctree.fromGraphNode(armchair);
+    // worldOctree.fromGraphNode(armchair);
     // arrObj.push(armchair);
 
     armchair.traverse((child) => {
@@ -175,7 +175,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     air_conditioner.position.set(-520, 250, -233);
     air_conditioner.scale.set(10, 10, 10);
     air_conditioner.rotateY(Math.PI / 2);
-    worldOctree.fromGraphNode(air_conditioner);
+    // worldOctree.fromGraphNode(air_conditioner);
     // arrObj.push(air_conditioner);
 
     air_conditioner.traverse((child) => {
