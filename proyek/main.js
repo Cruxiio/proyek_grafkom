@@ -40,6 +40,7 @@ const clock = new THREE.Clock();
 // state
 let lineHelper = false;
 let doorState = 0;
+let washState= 0 ;
 let isInteract = false;
 let arrObj = [];
 let doorLoaded = false;
@@ -91,17 +92,17 @@ pivot.position.set(-550, 0, -70);
 scene.add(pivot);
 
 
-const video = document.createElement('video');
-video.src = './public/video.mp4'; // Set the path to your video file
-video.load(); // Load the video
-video.play(); // Play the video
+// const video = document.createElement('video');
+// video.src = './public/video.mp4'; // Set the path to your video file
+// video.load(); // Load the video
+// video.play(); // Play the video
 
-const videoTexture = new THREE.VideoTexture(video);
-videoTexture.minFilter = THREE.LinearFilter;
-videoTexture.magFilter = THREE.LinearFilter;
-videoTexture.format = THREE.RGBFormat;
+// const videoTexture = new THREE.VideoTexture(video);
+// videoTexture.minFilter = THREE.LinearFilter;
+// videoTexture.magFilter = THREE.LinearFilter;
+// videoTexture.format = THREE.RGBFormat;
 
-const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+// const videoMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
 
 loader.load("public/low_poly_gaming_desk.glb", function (gltf) {
   let gaming_desk = gltf.scene;
@@ -265,6 +266,40 @@ loader.load("public/house.glb", function (gltf) {
   scene.add(apartment);
 });
 
+loader.load("public/editedWashingMachine.glb", function (gltf) {
+  const washing_machine = gltf.scene;
+  washing_machine.scale.set(100,100,100);
+  washing_machine.name = "washing_machine";
+  // worldOctree.fromGraphNode(gltf.scene);
+  washing_machine.position.set(-1100, 0, -500);
+  washing_machine.rotateY((Math.PI / 2) * 1);
+  washing_machine.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Allow the model to cast shadows
+      child.receiveShadow = true; // Allow the model to receive shadows
+    }
+  });
+  scene.add(washing_machine);
+
+  const light = new THREE.PointLight(0xffffff, 10000, 20000);
+  light.position.set(-1100, 30, -500);
+  scene.add(light)
+});
+
+loader.load("public/crompton_ceiling_fan.glb", function (gltf) {
+  const fan = gltf.scene;
+  fan.scale.set(50,50,50);
+  fan.name = "fan";
+  // worldOctree.fromGraphNode(gltf.scene);
+  fan.position.set(0, 0, 0);
+  fan.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Allow the model to cast shadows
+      child.receiveShadow = true; // Allow the model to receive shadows
+    }
+  });
+  scene.add(fan);
+});
 // Load and add the light bulb model
 degrees = 180;
 radians = THREE.MathUtils.degToRad(degrees);
@@ -377,8 +412,8 @@ renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appea
 //   }
 // });
 
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-// scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+scene.add(ambientLight);
 
 // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 // directionalLight.position.set(0, 1, 0);
@@ -628,6 +663,15 @@ function movement(deltaTime) {
     // console.log(light1.intensity);
     toggleLight("light4");
    }
+   let washing_machine= scene.getObjectByName("washing_machine")
+   let washDistance = camPos.distanceTo(washing_machine.position);
+   if(washDistance<200){
+    if(washState==0){
+      washState=1;
+    }else{
+      washState==0
+    }
+   }
   }
 }
 
@@ -692,7 +736,30 @@ function animate() {
       }
     }
   }
-
+  let washing_machine = scene.getObjectByName("washing_machine");
+  let rotator;
+  
+  if (washing_machine) {
+    washing_machine.traverse((child) => {
+      if (child.name == "Object_11") {
+        rotator = child;
+      }
+    });
+  
+    if (rotator && washState == 1) {
+      rotator.rotation.z -= 0.01;
+      console.log("jalan");
+    }
+  } else {
+    console.log("washing_machine object not found in the scene");
+  }
+  let fan = scene.getObjectByName("fan");
+  if(fan){
+    console.log("berhasil");
+    fan.rotation.y-= 0.1
+  }else{
+    console.log("gagal load");
+  }
   // console.log(arrObj[0]);
   const deltaTime = Math.min(0.05, clock.getDelta());
   movement(deltaTime);
