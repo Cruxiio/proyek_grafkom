@@ -23,7 +23,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     table_and_chairs.position.set(-800, 0, 0);
     table_and_chairs.scale.set(100, 100, 100);
     table_and_chairs.rotateY((Math.PI / 2) * 3);
-    // worldOctree.fromGraphNode(table_and_chairs);
+    worldOctree.fromGraphNode(table_and_chairs);
     // arrObj.push(table_and_chairs);
 
     table_and_chairs.traverse((child) => {
@@ -58,7 +58,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     shelves.position.set(-515, 0, -300);
     shelves.rotateY((Math.PI / 2) * 1);
     // shelves.scale.set(100, 100, 100);
-    // worldOctree.fromGraphNode(shelves);
+    worldOctree.fromGraphNode(shelves);
     // arrObj.push(shelves);
 
     shelves.traverse((child) => {
@@ -88,9 +88,9 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
   });
   loader.load("public/kitchen_sink.glb", function (gltf) {
     let kitchen_sink = gltf.scene;
-    kitchen_sink.position.set(-1000, 0, 550);
+    kitchen_sink.position.set(-1210, 0, 300);
     kitchen_sink.scale.set(100, 100, 100);
-    kitchen_sink.rotateY((Math.PI / 2) * 3);
+    kitchen_sink.rotateY((Math.PI / 2) * 2);
     worldOctree.fromGraphNode(kitchen_sink);
     // arrObj.push(kitchen_sink);
 
@@ -103,22 +103,23 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
 
     scene.add(kitchen_sink);
   });
-  loader.load("public/desk.glb", function (gltf) {
-    let desk = gltf.scene;
-    desk.position.set(-1000, 0, 550);
-    desk.scale.set(10, 10, 10);
-    worldOctree.fromGraphNode(desk);
-    // arrObj.push(desk);
+  // loader.load("public/desk.glb", function (gltf) {
+  //   let desk = gltf.scene;
+  //   desk.position.set(-1000, 0, 550);
+  //   desk.scale.set(100, 100, 100);
+  //   kitchen_sink.rotateY((Math.PI / 2) * 1);
+  //   worldOctree.fromGraphNode(desk);
+  //   // arrObj.push(desk);
 
-    desk.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true; // Enable shadow casting
-        child.receiveShadow = true; // Enable shadow receiving
-      }
-    });
+  //   desk.traverse((child) => {
+  //     if (child.isMesh) {
+  //       child.castShadow = true; // Enable shadow casting
+  //       child.receiveShadow = true; // Enable shadow receiving
+  //     }
+  //   });
 
-    scene.add(desk);
-  });
+  //   scene.add(desk);
+  // });
   loader.load("public/wardrobe.glb", function (gltf) {
     let wardrobe = gltf.scene;
     wardrobe.position.set(-20, 100, -300);
@@ -136,14 +137,114 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
 
     scene.add(wardrobe);
   });
+  loader.load("public/cortina_curtain_new_2.0.glb", function (gltf) {
+    let curtain = gltf.scene;
+    curtain.position.set(-250, 60, -600);
+    curtain.scale.set(80,60,75);
+    curtain.rotateY((Math.PI / 2) * 2);
+    // worldOctree.fromGraphNode(wardrobe);
+    // arrObj.push(wardrobe);
 
+    curtain.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+
+    scene.add(curtain);
+  });
+  loader.load("public/cortina_curtain_new_2.0.glb", function (gltf) {
+    let curtain = gltf.scene;
+    curtain.position.set(-250, 60, 150);
+    curtain.scale.set(80,60,75);
+    curtain.rotateY((Math.PI / 2) * 2);
+    // worldOctree.fromGraphNode(wardrobe);
+    // arrObj.push(wardrobe);
+
+    curtain.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+
+    scene.add(curtain);
+  });
+  loader.load("public/cortina_curtain_new_2.0.glb", function (gltf) {
+    let curtain = gltf.scene;
+    curtain.position.set(10, 60, -125);
+    curtain.scale.set(80,60,75);
+    curtain.rotateY((Math.PI / 2) * 3);
+    // worldOctree.fromGraphNode(wardrobe);
+    // arrObj.push(wardrobe);
+
+    curtain.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+
+    scene.add(curtain);
+  });
+
+  loader.load("public/cortina_curtain_new_2.0.glb", function (gltf) {
+    let curtain = gltf.scene;
+    curtain.position.set(-935, 60, 575);
+    curtain.scale.set(80,60,75);
+    curtain.rotateY((Math.PI / 2) * 2);
+    // worldOctree.fromGraphNode(wardrobe);
+    // arrObj.push(wardrobe);
+
+    curtain.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+
+    scene.add(curtain);
+  });
+  loader.load("public/cortina_curtain_new_2.0.glb", function (gltf) {
+    let curtain = gltf.scene;
+    curtain.position.set(-935, 60, -610);
+    curtain.scale.set(80,60,75);
+    curtain.rotateY((Math.PI / 2) * 2);
+    // worldOctree.fromGraphNode(wardrobe);
+    // arrObj.push(wardrobe);
+
+    curtain.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+    scene.add(curtain);
+  });
+  loader.load("public/cortina_curtain_new_2.0.glb", function (gltf) {
+    let curtain = gltf.scene;
+    curtain.position.set(-1230, 60, -125);
+    curtain.scale.set(80,60,75);
+    curtain.rotateY((Math.PI / 2) * 1);
+    // worldOctree.fromGraphNode(wardrobe);
+    // arrObj.push(wardrobe);
+
+    curtain.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
+      }
+    });
+    scene.add(curtain);
+  });
   // Load and add the fridge model
   loader.load("public/fridge.glb", function (gltf) {
     const fridge = gltf.scene;
-    fridge.position.set(-800, 0, 550);
+    fridge.position.set(-700, 0, 550);
     fridge.scale.set(100, 100, 100);
     fridge.rotateY(Math.PI / 2);
-    // worldOctree.fromGraphNode(fridge);
+    worldOctree.fromGraphNode(fridge);
     scene.add(fridge);
 
     fridge.traverse((child) => {
@@ -158,7 +259,7 @@ export function loadModels(scene, loader, worldOctree, arrObj) {
     let armchair = gltf.scene;
     armchair.position.set(-100, 0, -200);
     armchair.scale.set(150, 150, 150);
-    // worldOctree.fromGraphNode(armchair);
+    worldOctree.fromGraphNode(armchair);
     // arrObj.push(armchair);
 
     armchair.traverse((child) => {

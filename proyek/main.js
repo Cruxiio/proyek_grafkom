@@ -69,6 +69,19 @@ let radians = THREE.MathUtils.degToRad(degrees);
 
 const loader = new GLTFLoader();
 
+
+const video = document.createElement('video');
+video.src = 'public/video.mp4';
+
+video.loop = true;
+video.muted = true;
+video.play();
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.format = THREE.RGBFormat;
+
+
 camera.position.z = 5;
 camera.position.y = 1;
 // camera.position.x = 100;
@@ -111,10 +124,14 @@ loader.load("public/low_poly_gaming_desk.glb", function (gltf) {
   gaming_desk.rotateY((Math.PI / 2) * 1);
   worldOctree.fromGraphNode(gaming_desk);
   // arrObj.push(wardrobe);
+  const objectMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
 
   gaming_desk.traverse((child) => {
     if (child.isMesh) {
-      console.log(child.name);
+      if(child.name=="Object_7"){
+        child.material = objectMaterial;
+      }
+
       child.castShadow = true; // Enable shadow casting
       child.receiveShadow = true; // Enable shadow receiving
     }
@@ -271,7 +288,7 @@ loader.load("public/editedWashingMachine.glb", function (gltf) {
   washing_machine.scale.set(100,100,100);
   washing_machine.name = "washing_machine";
   // worldOctree.fromGraphNode(gltf.scene);
-  washing_machine.position.set(-1100, 0, -500);
+  washing_machine.position.set(-1210, 0, -500);
   washing_machine.rotateY((Math.PI / 2) * 1);
   washing_machine.traverse((child) => {
     if (child.isMesh) {
@@ -282,7 +299,7 @@ loader.load("public/editedWashingMachine.glb", function (gltf) {
   scene.add(washing_machine);
 
   const light = new THREE.PointLight(0xffffff, 10000, 20000);
-  light.position.set(-1100, 30, -500);
+  light.position.set(-1210, 30, -500);
   scene.add(light)
 });
 
@@ -291,7 +308,7 @@ loader.load("public/crompton_ceiling_fan.glb", function (gltf) {
   fan.scale.set(50,50,50);
   fan.name = "fan";
   // worldOctree.fromGraphNode(gltf.scene);
-  fan.position.set(0, 0, 0);
+  fan.position.set(-900, 130, -100);
   fan.traverse((child) => {
     if (child.isMesh) {
       child.castShadow = true; // Allow the model to cast shadows
@@ -412,8 +429,8 @@ renderer.shadowMap.type = THREE.VSMShadowMap; // Soft shadows for smoother appea
 //   }
 // });
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+// scene.add(ambientLight);
 
 // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 // directionalLight.position.set(0, 1, 0);
@@ -669,7 +686,7 @@ function movement(deltaTime) {
     if(washState==0){
       washState=1;
     }else{
-      washState==0
+      washState=0
     }
    }
   }
@@ -760,7 +777,9 @@ function animate() {
   }else{
     console.log("gagal load");
   }
+  // let  light1= scene.getObjectByName("light1");
   // console.log(arrObj[0]);
+  // toggleLight(light1)
   const deltaTime = Math.min(0.05, clock.getDelta());
   movement(deltaTime);
   updatePlayer(deltaTime);
